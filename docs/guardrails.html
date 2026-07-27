@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Meridian Pipeline Intelligence — Guardrails Specification</title>
+<style>
+  * { box-sizing:border-box; margin:0; padding:0;
+      font-family:-apple-system, BlinkMacSystemFont, 'Helvetica Neue',
+                  'Inter', sans-serif; -webkit-font-smoothing:antialiased; }
+  :root { --ink:#1D1D1F; --sub:#6E6E73; --faint:#86868B; --line:#E5E5EA;
+          --accent:#0071E3; --green:#1E7E34; --amber:#955300; --red:#C2352B; }
+  body { background:#fff; color:var(--ink); max-width:840px; margin:0 auto;
+         padding:40px 30px; font-size:13px; line-height:1.6; }
+  @media print { body{padding:0;} @page{margin:14mm 14mm;}
+                 .layer{page-break-inside:avoid;} h2{page-break-after:avoid;} }
+
+  h1 { font-size:24px; font-weight:700; letter-spacing:-.02em; }
+  .lead { color:var(--sub); font-size:13.5px; margin:6px 0 4px; }
+  .meta { color:var(--faint); font-size:11px; margin-bottom:18px; }
+  h2 { font-size:16px; font-weight:700; margin:22px 0 4px;
+       letter-spacing:-.01em; }
+  h2 small { font-weight:500; color:var(--faint); font-size:11px; }
+  p { margin:6px 0; color:#2B2B2E; }
+
+  .principle { border:1px solid #BFE3C6; background:#F2FBF4;
+       border-radius:12px; padding:12px 16px; margin:14px 0;
+       font-size:13.5px; }
+  .principle b { color:var(--green); }
+
+  .g { border:1px solid var(--line); border-radius:12px; padding:11px 15px;
+       margin:9px 0; }
+  .g-head { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;
+       margin-bottom:3px; }
+  .g-id { font-weight:800; color:var(--accent); font-size:13px;
+       white-space:nowrap; }
+  .g-name { font-weight:650; font-size:13.5px; }
+  .g-where { margin-left:auto; font-family:'SF Mono', ui-monospace, Menlo,
+       monospace; font-size:10.5px; color:var(--faint); }
+  .g p { font-size:12.3px; }
+  .row { display:flex; gap:8px; margin-top:5px; font-size:11.6px; }
+  .row .lab { flex:none; font-size:9px; font-weight:700; letter-spacing:.08em;
+       text-transform:uppercase; padding:2px 8px; border-radius:6px;
+       height:fit-content; margin-top:1px; white-space:nowrap; }
+  .lab.prevents { background:#FDECEB; color:var(--red); }
+  .lab.enforced { background:#EAF2FB; color:#0B5CAB; }
+  .lab.demo { background:#E9F7EC; color:var(--green); }
+  .row span { color:#3A3A3C; }
+
+  table { width:100%; border-collapse:collapse; font-size:11.6px; margin:10px 0; }
+  th { text-align:left; font-size:9.5px; font-weight:700; letter-spacing:.06em;
+       text-transform:uppercase; color:var(--faint); padding:5px 8px 5px 0;
+       border-bottom:1px solid var(--line); }
+  td { padding:5px 8px 5px 0; border-bottom:1px solid #F0F0F2;
+       vertical-align:top; }
+  code { font-family:'SF Mono', ui-monospace, Menlo, monospace; font-size:10.8px;
+         background:#F5F5F7; border-radius:5px; padding:1px 5px; }
+  footer { margin-top:18px; padding-top:8px; border-top:1px solid var(--line);
+           font-size:9.8px; color:var(--faint); display:flex;
+           justify-content:space-between; }
+</style>
+</head>
+<body>
+
+<h1>Guardrails Specification</h1>
+<p class="lead">The safety and operational constraints that keep Meridian
+Pipeline Intelligence inside its intended scope — what each guardrail does,
+where it lives in the code, what failure it prevents, and how to demonstrate
+it live.</p>
+<div class="meta">Meridian Pipeline Intelligence · ten guardrails in four
+layers · companion to the Presenter's Guide (ch. 5, 7, 8)</div>
+
+<div class="principle"><b>Governing principle — enforced by code, not by
+prompt.</b> We never ask the model to behave; we make misbehavior either
+structurally impossible (there is no code path for it) or immediately
+visible (badges, flags, rejections shown on screen). The previous vendor's
+guardrails were instructions to the model — "do not make up numbers" — and
+they failed. None of the ten mechanisms below depends on the model
+following an instruction.</div>
+
+<!-- LAYER 1 -->
+<div class="layer">
+<h2>Layer 1 · Input guardrails <small>— what questions get in</small></h2>
+
+<div class="g">
+  <div class="g-head"><span class="g-id">G1</span>
+    <span class="g-name">Closed intent menu</span>
+    <span class="g-where">question_router.py · llm_layer.py</span></div>
+  <p>The assistant can perform exactly eight pre-approved, hand-audited
+  analyses. A question is matched to one of them — first by transparent
+  keyword rules, then (optionally) by the LLM, whose entire routing authority
+  is choosing one item from the fixed list. Its choice is re-validated
+  against the catalog before use; anything else is discarded. There is no
+  path from a user's words to a new computation.</p>
+  <div class="row"><span class="lab prevents">Prevents</span><span>Invented
+  analyses — the "plausible query that's subtly wrong" failure of
+  text-to-SQL approaches.</span></div>
+  <div class="row"><span class="lab enforced">Enforced by</span><span>
+  Whitelist check on the returned intent id; routing eval scored 22/24 on a
+  golden set, with every miss failing to refusal, never to a wrong
+  number.</span></div>
+  <div class="row"><span class="lab demo">Demonstrate</span><span>Ask
+  "Are we going to make the number this quarter?" — the answer header reads
+  "LLM classification, validated against the approved intent
+  catalog."</span></div>
+</div>
+
+<div class="g">
+  <div class="g-head"><span class="g-id">G2</span>
+    <span class="g-name">Out-of-scope refusal</span>
+    <span class="g-where">question_router.py · _OUT_OF_SCOPE guard</span></div>
+  <p>Questions about periods or topics the data cannot support — Q3, next
+  year, forecasts, predictions, anything non-pipeline — are refused before
+  any other matching runs. The refusal is specific: it lists the analyses
+  the tool does support. The LLM router is likewise instructed and
+  validated to return "unsupported" rather than stretch.</p>
+  <div class="row"><span class="lab prevents">Prevents</span><span>Answering
+  a question about the future with present-day figures; improvising when the
+  honest answer is "no data exists."</span></div>
+  <div class="row"><span class="lab demo">Demonstrate</span><span>Ask
+  "What will Q3 revenue be?" — refusal, with the supported-analyses
+  list.</span></div>
+</div>
+
+<div class="g">
+  <div class="g-head"><span class="g-id">G3</span>
+    <span class="g-name">Entity validation</span>
+    <span class="g-where">llm_layer.py · _resolve_entity()</span></div>
+  <p>When a route names a person or segment, the name must resolve against
+  the actual rep master (the ten real salespeople) or the fixed segment
+  list. A misspelled, invented, or hallucinated entity resolves to nothing
+  and the route is discarded. The model's output is never trusted as an
+  identifier.</p>
+  <div class="row"><span class="lab prevents">Prevents</span><span>Reporting
+  on a person who doesn't exist; attaching real numbers to a wrong
+  name.</span></div>
+  <div class="row"><span class="lab demo">Demonstrate</span><span>Ask about
+  "Bob Smith" — no such rep; the tool refuses rather than
+  approximates.</span></div>
+</div>
+</div>
+
+<!-- LAYER 2 -->
+<div class="layer">
+<h2>Layer 2 · Computation guardrails <small>— the LLM-free zone</small></h2>
+
+<div class="g">
+  <div class="g-head"><span class="g-id">G4</span>
+    <span class="g-name">No model in the numeric path</span>
+    <span class="g-where">analytics.py (entire module)</span></div>
+  <p>Every figure on screen is produced by deterministic pandas code —
+  same inputs, same outputs, every time. The LLM cannot calculate, round,
+  estimate, filter, pick a date range, or generate a query. This is not a
+  rule the model follows; it is an architecture the model cannot violate:
+  no code path carries model output into arithmetic.</p>
+  <div class="row"><span class="lab prevents">Prevents</span><span>
+  Hallucinated numbers at the source — the failure that burned this client.
+  </span></div>
+  <div class="row"><span class="lab enforced">Enforced by</span><span>
+  Module boundary: <code>analytics.py</code> imports no LLM library; 38
+  automated tests pin every important figure to hand-verified values.
+  </span></div>
+</div>
+
+<div class="g">
+  <div class="g-head"><span class="g-id">G5</span>
+    <span class="g-name">Fail-closed validation</span>
+    <span class="g-where">data_loader.py · analytics.reconcile() · Dockerfile</span></div>
+  <p>On every launch the data must pass schema checks, safe parsing, and
+  five independent reconciliations (deal-level totals must equal per-rep
+  totals must equal per-segment totals; every row must land in exactly one
+  bucket; the same-point subset must be contained in the final book). Any
+  failure → the app serves nothing at all, with a specific error. The same
+  gate runs inside the Docker build: an image whose data or tests fail
+  cannot be produced.</p>
+  <div class="row"><span class="lab prevents">Prevents</span><span>Serving
+  numbers from corrupted, drifted, or partially-loaded data; deploying a
+  broken build.</span></div>
+  <div class="row"><span class="lab demo">Demonstrate</span><span>Sidebar:
+  "Data validated · 5 reconciliations passed." (Or corrupt a CSV copy and
+  show the full-stop error.)</span></div>
+</div>
+</div>
+
+<!-- LAYER 3 -->
+<div class="layer">
+<h2>Layer 3 · Output guardrails <small>— what reaches the screen</small></h2>
+
+<div class="g">
+  <div class="g-head"><span class="g-id">G6</span>
+    <span class="g-name">Numeric validator with veto power</span>
+    <span class="g-where">llm_layer.py · narrate_answer() · extract_numbers()</span></div>
+  <p>The LLM may rephrase a computed answer into friendly prose. Before that
+  prose renders, plain code extracts every number from it and checks each
+  one against the set of numbers the engine actually produced. One mismatch —
+  including abbreviations like "$3.65M" for $3,650,000, and silent
+  rounding — and the entire narration is discarded, replaced by the
+  engine's own wording, with the rejection displayed on screen. A made-up
+  figure structurally cannot render.</p>
+  <div class="row"><span class="lab prevents">Prevents</span><span>
+  Hallucinated or distorted numbers at the last mile — the narration
+  step, which is the only place the model touches an answer.</span></div>
+  <div class="row"><span class="lab enforced">Enforced by</span><span>Tests
+  assert the validator rejects $999,999, rejects 42.7%, rejects "$3.65M";
+  the pass/fail is printed under every answer ("AI summary · 11 numbers
+  verified").</span></div>
+</div>
+
+<div class="g">
+  <div class="g-head"><span class="g-id">G7</span>
+    <span class="g-name">Self-downgrading trust badges</span>
+    <span class="g-where">analytics.py · _trust_level() + per-answer rules</span></div>
+  <p>Every answer grades itself by fixed published rules — green (no known
+  issue touches it), amber (exact arithmetic, but a stated assumption or
+  data issue affects reading), red (a data defect dominates). Examples of
+  the rules: booked revenue &gt;50% re-dated (F4) → red; a rep's pipeline
+  &gt;50% on recycled IDs (F1) → the tool refuses to classify the person at
+  all. The tool constrains its own confidence, not just the model's.</p>
+  <div class="row"><span class="lab prevents">Prevents</span><span>
+  Technically-correct numbers being read as trustworthy when the underlying
+  records are compromised; unfair conclusions about people.</span></div>
+  <div class="row"><span class="lab demo">Demonstrate</span><span>
+  "Enterprise vs quota" (red — its whole numerator is re-dated) and "How is
+  Priya Patel doing?" (red — 61% corrupted pipeline).</span></div>
+</div>
+
+<div class="g">
+  <div class="g-head"><span class="g-id">G8</span>
+    <span class="g-name">Mandatory receipts</span>
+    <span class="g-where">analytics.py · AnswerPacket contract</span></div>
+  <p>The only output shape the system has is an AnswerPacket: answer +
+  source rows + written-out calculation + assumptions + warnings + trust
+  level. An answer cannot exist without its evidence attached — traceability
+  is not a feature to enable, it is the data structure itself.</p>
+  <div class="row"><span class="lab prevents">Prevents</span><span>
+  "Based on your data" answers that can't be checked; arguments about where
+  a number came from.</span></div>
+  <div class="row"><span class="lab demo">Demonstrate</span><span>Any
+  answer → Source data tab. Enterprise is the showpiece: the numerator is
+  one visible row.</span></div>
+</div>
+</div>
+
+<!-- LAYER 4 -->
+<div class="layer">
+<h2>Layer 4 · Operational guardrails <small>— running safely</small></h2>
+
+<div class="g">
+  <div class="g-head"><span class="g-id">G9</span>
+    <span class="g-name">Graceful degradation</span>
+    <span class="g-where">llm_layer.py · every call wrapped; provider-agnostic</span></div>
+  <p>Any LLM failure — missing key, timeout, rate limit, refusal, truncated
+  response, vendor outage — degrades silently to keyword routing and the
+  engine's own deterministic wording. The AI is an enhancement, never a
+  dependency; the sidebar toggle turns it off live. The same design makes
+  the tool vendor-agnostic: it has run on two different providers with zero
+  change to any trust property, because the guardrails live in our code,
+  not in any vendor's model.</p>
+  <div class="row"><span class="lab prevents">Prevents</span><span>An AI
+  outage becoming an app outage; vendor lock-in of the safety story;
+  half-finished AI text reaching users (truncated responses are treated as
+  failures).</span></div>
+  <div class="row"><span class="lab demo">Demonstrate</span><span>Flip
+  "LLM routing &amp; narration" off in the sidebar — everything still
+  works.</span></div>
+</div>
+
+<div class="g">
+  <div class="g-head"><span class="g-id">G10</span>
+    <span class="g-name">Audit log</span>
+    <span class="g-where">observability.py · logs/queries.jsonl</span></div>
+  <p>Every question is appended to an audit log: timestamp, question, how it
+  was routed, the answer's trust level, whether the AI summary passed
+  validation and how many numbers were checked, and response time. Logging
+  is designed to never break the app (it swallows its own errors — tested),
+  and the log persists across container restarts via a mounted volume.
+  Anything the assistant has ever said can be audited after the fact.</p>
+  <div class="row"><span class="lab prevents">Prevents</span><span>
+  Unaccountable answers; "what did it tell whom?" being unanswerable in an
+  incident review.</span></div>
+  <div class="row"><span class="lab demo">Demonstrate</span><span>Sidebar →
+  Observability: live session stats and the recent-questions list.</span></div>
+</div>
+</div>
+
+<!-- SUMMARY TABLE -->
+<h2>Summary — guardrail × failure prevented × evidence</h2>
+<table>
+<tr><th></th><th>Guardrail</th><th>Failure it prevents</th><th>Evidence it works</th></tr>
+<tr><td><b>G1</b></td><td>Closed intent menu</td><td>Invented analyses</td>
+<td>Routing eval 22/24; misses → refusal</td></tr>
+<tr><td><b>G2</b></td><td>Out-of-scope refusal</td><td>Improvised answers</td>
+<td>Live: "What will Q3 revenue be?"</td></tr>
+<tr><td><b>G3</b></td><td>Entity validation</td><td>Wrong-person reporting</td>
+<td>Resolution against real rep master</td></tr>
+<tr><td><b>G4</b></td><td>LLM-free numeric path</td><td>Hallucinated numbers</td>
+<td>Module boundary + 38 golden tests</td></tr>
+<tr><td><b>G5</b></td><td>Fail-closed validation</td><td>Serving corrupted data</td>
+<td>5 reconciliations; test-gated Docker build</td></tr>
+<tr><td><b>G6</b></td><td>Numeric validator (veto)</td><td>Last-mile distortion</td>
+<td>Rejection tests incl. "$3.65M"; verdict shown on screen</td></tr>
+<tr><td><b>G7</b></td><td>Self-downgrading badges</td><td>Misplaced confidence</td>
+<td>Fixed rules; Enterprise &amp; Priya go red today</td></tr>
+<tr><td><b>G8</b></td><td>Mandatory receipts</td><td>Uncheckable answers</td>
+<td>AnswerPacket is the only output type</td></tr>
+<tr><td><b>G9</b></td><td>Graceful degradation</td><td>AI outage = app outage</td>
+<td>Survived a live provider billing outage unchanged</td></tr>
+<tr><td><b>G10</b></td><td>Audit log</td><td>Unaccountable answers</td>
+<td>logs/queries.jsonl + 4 tests incl. never-raises</td></tr>
+</table>
+
+<p style="font-size:12.3px; margin-top:10px;"><b>Residual risks, stated
+honestly:</b> a misroute within the menu shows a clearly-labeled answer to
+the wrong question (visible, correctable — but possible); narration
+<em>wording</em> could mislead even with correct numbers (mitigated by
+showing the deterministic wording in the Calculation tab); and guardrails
+only cover defects we've conceived — F4 was found by human audit after all
+tests passed, which is why the audit posture, not the test count, is the
+durable protection.</p>
+
+<footer>
+  <span>Guardrails Specification · Meridian Pipeline Intelligence ·
+        Sai Saran</span>
+  <span>Companions: Presenter's Guide · One-page summary · 42-test suite</span>
+</footer>
+
+</body>
+</html>

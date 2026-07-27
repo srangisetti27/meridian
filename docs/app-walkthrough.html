@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The Live App Walkthrough — Screens & Sample Q&A with Real Outputs</title>
+<style>
+  * { box-sizing:border-box; margin:0; padding:0;
+      font-family:-apple-system, BlinkMacSystemFont, 'Helvetica Neue',
+                  'Inter', sans-serif; -webkit-font-smoothing:antialiased; }
+  :root { --ink:#1D1D1F; --sub:#6E6E73; --faint:#86868B; --line:#E5E5EA;
+          --accent:#0071E3; --green:#1E7E34; --amber:#955300; --red:#C2352B; }
+  body { background:#fff; color:var(--ink); max-width:810px; margin:0 auto;
+         padding:40px 30px; font-size:13.5px; line-height:1.62; }
+  @media print { body{padding:0;} @page{margin:15mm 14mm;}
+                 .chapter{page-break-before:always;} .cover{page-break-before:avoid;} }
+
+  h1 { font-size:25px; font-weight:700; letter-spacing:-.02em; margin-bottom:6px;}
+  h2 { font-size:18px; font-weight:700; letter-spacing:-.015em; margin:24px 0 4px;}
+  h3 { font-size:14px; font-weight:650; margin:14px 0 6px; }
+  p  { margin:8px 0; color:#2B2B2E; }
+  .lead { color:var(--sub); font-size:14.5px; }
+  ul, ol { margin:8px 0 8px 22px; }
+  li { margin:4px 0; color:#2B2B2E; }
+  b { color:var(--ink); }
+  .kicker { font-size:10.5px; font-weight:700; letter-spacing:.12em;
+            text-transform:uppercase; color:var(--accent); margin-bottom:8px;}
+  .cover-meta { color:var(--faint); font-size:12px; margin:10px 0 22px; }
+
+  /* the "what the app shows" card */
+  .shot { border:1px solid var(--line); border-radius:14px; padding:13px 16px;
+          margin:12px 0; background:#FBFBFD; }
+  .shot-top { display:flex; justify-content:space-between; gap:10px;
+          align-items:center; margin-bottom:7px; flex-wrap:wrap; }
+  .route { font-size:.68rem; font-weight:700; letter-spacing:.07em;
+          text-transform:uppercase; color:var(--faint); }
+  .pill { display:inline-flex; align-items:center; gap:5px; font-size:10.5px;
+          font-weight:600; padding:2px 10px; border-radius:999px; }
+  .pill i { width:6px;height:6px;border-radius:50%;display:inline-block;font-style:normal;}
+  .p-red{background:#FDECEB;color:var(--red);} .p-red i{background:#FF3B30;}
+  .p-amber{background:#FFF4E0;color:var(--amber);} .p-amber i{background:#FF9500;}
+  .p-green{background:#E9F7EC;color:var(--green);} .p-green i{background:#34C759;}
+  .p-gray{background:#F0F0F2;color:#515154;} .p-gray i{background:#8E8E93;}
+  .headline { font-size:12.8px; color:#1D1D1F; line-height:1.55;
+          border-left:3px solid var(--accent); padding:4px 12px; margin:8px 0;
+          background:#fff; border-radius:0 8px 8px 0; }
+  .tiles { display:flex; flex-wrap:wrap; gap:6px; margin:8px 0; }
+  .tile { border:1px solid var(--line); background:#fff; border-radius:9px;
+          padding:5px 10px; font-size:10.8px; }
+  .tile b { display:block; font-size:12.5px; font-variant-numeric:tabular-nums; }
+  .tile span { color:var(--faint); font-size:9.5px; }
+  .w { font-size:11px; color:#3A3A3C; padding:5px 10px; margin:4px 0;
+       border-left:3px solid #FF9500; background:#FFFBF4;
+       border-radius:0 7px 7px 0; line-height:1.45; }
+  .ev { font-size:10.5px; color:var(--faint); margin-top:6px; }
+
+  .say { border-left:3px solid #34C759; background:#F4FBF5;
+         border-radius:0 10px 10px 0; padding:9px 14px; margin:10px 0;
+         font-size:12.6px; font-style:italic; color:#1F3D26; }
+  .say::before { content:'POINT AT IT AND SAY'; display:block;
+         font-style:normal; font-size:9.5px; font-weight:700;
+         letter-spacing:.1em; color:var(--green); margin-bottom:3px; }
+  .note { font-size:11.8px; color:var(--sub); background:#F5F5F7;
+          border-radius:9px; padding:8px 12px; margin:8px 0; }
+
+  table { width:100%; border-collapse:collapse; font-size:12px; margin:10px 0;}
+  th { text-align:left; font-size:10px; font-weight:700; letter-spacing:.06em;
+       text-transform:uppercase; color:var(--faint); padding:5px 10px 5px 0;
+       border-bottom:1px solid var(--line); }
+  td { padding:6px 10px 6px 0; border-bottom:1px solid #F0F0F2; vertical-align:top; }
+  .small { font-size:11.5px; color:var(--sub); }
+  code { font-family:'SF Mono', ui-monospace, Menlo, monospace; font-size:12px;
+         background:#F5F5F7; border-radius:5px; padding:1px 6px; }
+  .chapter { margin-top:10px; }
+  hr { border:none; border-top:1px solid var(--line); margin:16px 0; }
+</style>
+</head>
+<body>
+
+<!-- ============ COVER ============ -->
+<div class="cover">
+<div class="kicker">Demo companion · every screen, every sample question, with real outputs</div>
+<h1>The Live App Walkthrough</h1>
+<p class="lead">This document mirrors the running application. Every sample
+question below shows the app's <b>actual output, quoted verbatim</b> — the
+routing line, the trust badge, the headline, the metric tiles, and the
+warnings — plus what to point at and what to say. Learn this, and you can
+narrate the demo perfectly even if you had to present from paper.</p>
+<div class="cover-meta">Meridian Pipeline Intelligence · outputs captured
+from the deterministic engine (AI narration adds phrasing on top, never new
+numbers) · Sai Saran</div>
+
+<h3>Contents</h3>
+<table class="toc">
+<tr><td>1. The resting screen — header, KPI band, chips</td></tr>
+<tr><td>2. The sidebar — the tool's conscience</td></tr>
+<tr><td>3. Anatomy of one answer card</td></tr>
+<tr><td>4–12. Nine sample questions with real outputs</td></tr>
+<tr><td>13. The refusals — two questions it will not answer</td></tr>
+<tr><td>14. What changes when the AI is on</td></tr>
+<tr><td>15. The demo cheat sheet</td></tr>
+</table>
+</div>
+
+<!-- ============ CH 1 ============ -->
+<div class="chapter">
+<h2>1 · The resting screen — header, KPI band, chips</h2>
+
+<p>Launch with <code>./run.sh</code> (or <code>docker compose up</code>).
+Before any question, the page already presents the quarter. Walk it top to
+bottom:</p>
+
+<h3>The title and promise</h3>
+<p><b>"Meridian Pipeline Intelligence"</b> with one sentence under it:
+<i>every answer shows its source records, its formula, and its assumptions —
+numbers are computed, never generated.</i> The product's whole contract, in
+the first two lines. The meta line beneath anchors time: <b>Q1 2026 final ·
+Q2 2026 in progress, day 32 of 91 (as of May 02, 2026) · 8 audited
+analyses.</b></p>
+
+<h3>The four KPI cards (they count up from $0 when the page loads)</h3>
+<div class="tiles">
+  <div class="tile"><span>Q2 QUOTA</span><b>$6,200,000</b>
+    <span>10 reps · 3 segments · 4 regions</span></div>
+  <div class="tile"><span>BOOKED, CLOSED-WON</span><b>$518,000</b>
+    <span>8.4% of quota · strictly new $145,000 (F4)</span></div>
+  <div class="tile"><span>OPEN PIPELINE</span><b>$5,198,000</b>
+    <span>unweighted · not booked revenue</span></div>
+  <div class="tile"><span>UNCOVERED QUOTA</span><b>$484,000</b>
+    <span>short even at a 100% win rate</span></div>
+</div>
+
+<div class="say">Before anyone asks a question, the tool has already
+disclosed two things a dashboard wouldn't: most of that $518K was arguably
+counted last quarter — see "strictly new $145,000" — and even winning every
+open deal leaves a $484,000 hole. The quarter's real headline is: create
+pipeline now.</div>
+
+<h3>The five suggested chips</h3>
+<p>One row of capsules — <b>Enterprise vs quota · Reps at risk · Q2 vs Q1
+pace · Regional view · Data quality</b>. Hovering shows the full question
+each one sends. Below them, the chat box:
+<i>"Ask about quota, reps, segments, regions, or data quality…"</i></p>
+</div>
+
+<!-- ============ CH 2 ============ -->
+<div class="chapter">
+<h2>2 · The sidebar — the tool's conscience</h2>
+
+<p>Everything in the left rail is the tool being honest about itself.
+Top to bottom:</p>
+
+<h3>Data status</h3>
+<p><b>"Data validated · 5 reconciliations passed"</b> with a green dot,
+then the facts: as of May 02 2026 · Q1 (final) 88 deals · Q2 snapshot 92
+deals · Reps 10 · Day 32 of 91, and a progress bar at 35%. If any
+reconciliation had failed, this page would show an error instead of
+numbers — the app fails closed.</p>
+
+<h3>AI assist</h3>
+<p>A toggle — <b>"LLM routing &amp; narration"</b> — and the contract
+line: <i>numbers always computed, never generated</i>, plus which provider
+is active. Flip it off live any time: the app keeps answering in its own
+wording. This switch is your proof that AI is a convenience here, not a
+dependency.</p>
+
+<h3>Observability</h3>
+<p>Live counts from the audit log: questions logged, answered vs refused,
+AI summaries verified, response times — and a "Recent questions" list.
+Every answer the tool has ever given is on record in
+<code>logs/queries.jsonl</code>.</p>
+
+<h3>Known data issues</h3>
+<p>The five findings as compact rows — F1 reused deal IDs ($1.97M of
+pipeline), F2 closed deals reopened, F3 overdue deals, F4 revenue counted
+in both quarters ($373K), F5 edited history. Detected automatically at
+load; fix the files and these rows disappear.</p>
+
+<h3>Methodology</h3>
+<p>An expandable panel with every metric definition, the six assumptions,
+and the reconciliation list — the whole rulebook, one click from every
+answer.</p>
+
+<div class="say">The sidebar is the part I'm proudest of, and it never
+changes: the tool's own health checks, its own known problems, and its own
+rulebook — permanently on screen. Nothing about this product asks to be
+trusted; it shows its working.</div>
+</div>
+
+<!-- ============ CH 3 ============ -->
+<div class="chapter">
+<h2>3 · Anatomy of one answer card</h2>
+
+<p>Every answer has the same seven parts, in the same order. Learn this
+once and every sample below reads instantly:</p>
+
+<ol>
+<li><b>The routing line</b> (top-left, small caps) — what the question was
+interpreted as, and what it matched on: a suggested question, a keyword, a
+rep's name, or <i>"LLM classification, validated against the approved
+intent catalog."</i> Misunderstandings are visible here, never hidden.</li>
+<li><b>The trust badge</b> (top-right) — <span class="pill p-green"><i></i>Verified</span>
+<span class="pill p-amber"><i></i>Verified with assumptions</span> or
+<span class="pill p-red"><i></i>Insufficient data</span>. Fixed rules, not
+feelings.</li>
+<li><b>The answer</b> — two to four sentences. With AI on, it's the
+model's phrasing that survived validation; otherwise the engine's own
+wording. Below it, the verification line: <i>"AI summary · N numbers
+verified against computed results."</i></li>
+<li><b>Metric tiles</b> — the key figures as cards.</li>
+<li><b>A chart</b>, when one helps.</li>
+<li><b>Data-quality warnings</b> — always visible, orange-edged,
+quantified in dollars.</li>
+<li><b>Three tabs</b> — <b>Source data</b> (the actual rows, with problem
+rows tagged), <b>Calculation</b> (numerator, denominator, filters,
+thresholds, written out), <b>Assumptions</b>.</li>
+</ol>
+<p>Each new answer also fires a small toast, bottom-right: <i>"Answer
+verified — N numbers checked against the engine."</i></p>
+</div>
+
+<!-- ============ CH 4 ============ -->
+<div class="chapter">
+<h2>4 · Sample question 1 — the Enterprise chip</h2>
+<p><b>Click:</b> the <i>Enterprise vs quota</i> chip (sends "How is the
+Enterprise segment tracking against quota this quarter?").</p>
+
+<div class="shot">
+<div class="shot-top"><span class="route">Enterprise Q2 quota tracking ·
+suggested question</span><span class="pill p-red"><i></i>Insufficient data</span></div>
+<div class="headline">Enterprise has closed $165,000 of its $3,650,000 Q2
+quota (4.5%) with 35% of the quarter elapsed. Open pipeline of $3,600,000
+covers the remaining gap 1.03x — below the 1.28x needed at Q1's realized
+win rate. Caution: $165,000 of that booked figure was already recorded as
+won in the final Q1 book — strictly new Q2 revenue is $0.</div>
+<div class="tiles">
+<div class="tile"><span>CLOSED-WON</span><b>$165,000</b><span>1 deal, Apr 1 – May 2</span></div>
+<div class="tile"><span>Q2 QUOTA</span><b>$3,650,000</b><span>4 Enterprise reps</span></div>
+<div class="tile"><span>ATTAINMENT</span><b>4.5%</b><span>vs 35% elapsed</span></div>
+<div class="tile"><span>OPEN PIPELINE</span><b>$3,600,000</b><span>20 open deals</span></div>
+<div class="tile"><span>COVERAGE</span><b>1.03x</b><span>break-even 1.28x</span></div>
+</div>
+<div class="w">$165,000 of Enterprise's Q2 booked revenue (100%) comes from
+deals recorded as Closed Won in the final Q1 book whose close dates moved
+into Q2 (F4). Counting only strictly new wins, Enterprise Q2 bookings are $0.</div>
+<div class="w">$1,475,000 of Enterprise open pipeline sits on reused deal
+IDs (F1); treat pipeline-based conclusions with care.</div>
+<div class="w">$305,000 of Enterprise open pipeline is deals already closed
+in the final Q1 book that have reopened (F2).</div>
+<div class="ev">Source data: the numerator (1 row — Sunridge Systems) · the
+quota basis (4 reps) · the open pipeline (20 rows, problem rows tagged)</div>
+</div>
+
+<div class="say">Notice the badge is red — the tool is downgrading its own
+answer. The 4.5% is arithmetically perfect and strategically misleading,
+and it tells you why: its entire numerator is one deal your closed Q1 books
+already counted. Open Source data — the numerator is one visible row. When
+the answer is one deal, you get shown the deal.</div>
+</div>
+
+<!-- ============ CH 5 ============ -->
+<div class="chapter">
+<h2>5 · Sample question 2 — the Reps at risk chip</h2>
+<p><b>Click:</b> <i>Reps at risk</i> (sends "Which reps are at risk of
+missing Q2?").</p>
+
+<div class="shot">
+<div class="shot-top"><span class="route">Reps at risk of missing Q2 ·
+suggested question</span><span class="pill p-amber"><i></i>Verified with assumptions</span></div>
+<div class="headline">3 of 10 reps are At risk — behind pace with pipeline
+mathematically short of their remaining quota: Kevin Marsh (REP-06), Lisa
+Park (REP-09), Ryan Cole (REP-10). 4 are on Watch, and 3 cannot be
+responsibly classified because most of their pipeline sits on reused deal
+IDs.</div>
+<div class="tiles">
+<div class="tile"><span>AT RISK</span><b>3</b><span>pipeline &lt; remaining quota</span></div>
+<div class="tile"><span>WATCH</span><b>4</b><span>behind on one signal</span></div>
+<div class="tile"><span>ON TRACK</span><b>0</b></div>
+<div class="tile"><span>INSUFFICIENT DATA</span><b>3</b><span>&gt;50% reused-ID pipeline</span></div>
+</div>
+<div class="w">$373,000 of booked Q2 revenue was already recorded as won in
+the final Q1 book (F4), concentrated in: REP-01 ($165,000 — 100% of their
+booked); REP-08 ($208,000 — 71%).</div>
+<div class="w">Day 32 of 91: 7 of 10 reps have $0 booked. Q1 showed the
+same early pattern (21% at day 32) and finished at 102% — read "At risk"
+as needs pipeline scrutiny, not a verdict.</div>
+<div class="ev">Chart: coverage per rep with two reference lines — 1.0x
+(gap uncloseable below this) and 1.28x (break-even at Q1's real win rate).
+Source data: the full 10-rep table with every input to the rules.</div>
+</div>
+
+<div class="say">Three verdicts here, and the third is the one that
+matters: the tool refuses to grade Patel, Torres, and Williams — over half
+their pipeline sits on corrupted records. It reports them as a data
+problem, not a performance problem. That refusal protects careers, and
+it's a judgment a hallucinating tool cannot make.</div>
+</div>
+
+<!-- ============ CH 6 ============ -->
+<div class="chapter">
+<h2>6 · Sample question 3 — the Q2 vs Q1 chip</h2>
+<p><b>Click:</b> <i>Q2 vs Q1 pace</i> (sends "How does Q2 attainment
+compare to where we were at the same point in Q1?").</p>
+
+<div class="shot">
+<div class="shot-top"><span class="route">Q2 vs Q1 at the same point ·
+suggested question</span><span class="pill p-amber"><i></i>Verified with assumptions</span></div>
+<div class="headline">Q2 is running behind Q1's pace: $518,000 closed
+(8.4% of quota) through day 32, versus $1,260,000 (21.3%) at the same
+point in Q1 — about 41% of Q1's dollar pace. Q1 went on to finish at
+102.0%. Counting only strictly new Q2 wins ($145,000), the gap is wider
+still.</div>
+<div class="tiles">
+<div class="tile"><span>Q2 BOOKED (DAY 32)</span><b>$518,000</b><span>5 deals · 8.4%</span></div>
+<div class="tile"><span>Q1 BOOKED (DAY 32)</span><b>$1,260,000</b><span>10 deals · 21.3%</span></div>
+<div class="tile"><span>GAP</span><b>−12.9% pts</b><span>equal days elapsed</span></div>
+<div class="tile"><span>STRICTLY-NEW Q2</span><b>$145,000</b><span>excluding F4</span></div>
+<div class="tile"><span>Q1 FINAL</span><b>102.0%</b><span>$6,041,000 · back-loaded</span></div>
+</div>
+<div class="w">Q2's window has one more business day (23 vs 22) and one
+more calendar day (91 vs 90); both favor Q2 — so the gap is not an
+alignment artifact.</div>
+<div class="w">The Q1 side is a reconstruction: the final Q1 file filtered
+to close dates on or before Feb 01.</div>
+<div class="ev">Chart: two attainment bars, Q1 gray vs Q2 blue. Source
+data: the 5 Q2 wins and the 10 Q1 wins, row by row.</div>
+</div>
+
+<div class="say">The fairness question is answered before anyone asks it:
+we aligned on equal days elapsed, checked the calendar both ways, and both
+residual effects favor Q2 — so the 41%-of-pace finding is real. Balanced
+by honesty: Q1 also started slow and finished at 102%. The conclusion
+isn't panic; it's create pipeline now.</div>
+</div>
+
+<!-- ============ CH 7 ============ -->
+<div class="chapter">
+<h2>7 · Sample question 4 — the Regional view chip</h2>
+<p><b>Click:</b> <i>Regional view</i> (sends "How is each region performing
+this quarter?").</p>
+
+<div class="shot">
+<div class="shot-top"><span class="route">Regional performance · keyword
+"region"</span><span class="pill p-amber"><i></i>Verified with assumptions</span></div>
+<div class="headline">By deal region, Southeast leads Q2 bookings with
+$208,000; total Q2 bookings are $518,000 against a $6,200,000 quota, with
+$5,198,000 of open pipeline distributed across four regions.</div>
+<div class="tiles">
+<div class="tile"><span>CENTRAL</span><b>$145,000</b><span>quota $1,330,000 · pipe $1,830,000</span></div>
+<div class="tile"><span>NORTHEAST</span><b>$0</b><span>quota $1,780,000 · pipe $1,110,000</span></div>
+<div class="tile"><span>SOUTHEAST</span><b>$208,000</b><span>quota $1,370,000 · pipe $1,315,000</span></div>
+<div class="tile"><span>WEST</span><b>$165,000</b><span>quota $1,720,000 · pipe $943,000</span></div>
+</div>
+<div class="w">12 active deals ($1,335,000) sit in a region different from
+their owning rep's home region. Revenue follows the deal's region while
+quota follows the rep's home region — regional attainment is approximate;
+treat it as directional.</div>
+<div class="ev">Source data: the per-region table, plus the 12 cross-region
+deals listed row by row — the source of the approximation.</div>
+</div>
+
+<div class="say">A small example of the product's character: it could have
+printed regional attainment percentages that look precise. Instead it
+tells you the quota basis and the deal basis don't perfectly align — 12
+deals, $1.3 million — and labels the view directional. An approximate
+number labeled approximate beats a precise-looking number that quietly
+isn't.</div>
+</div>
+
+<!-- ============ CH 8 ============ -->
+<div class="chapter">
+<h2>8 · Sample question 5 — the Data quality chip</h2>
+<p><b>Click:</b> <i>Data quality</i> (sends "What's wrong with my
+data?").</p>
+
+<div class="shot">
+<div class="shot-top"><span class="route">Data quality report · keywords
+"data" + quality</span><span class="pill p-green"><i></i>Verified</span></div>
+<div class="headline">Five distinct data-integrity findings affect 28 of
+92 deals in the current snapshot. The most consequential: $373,000 of Q2
+"bookings" was already recorded as Q1 revenue (F4), and $1,970,000 of open
+pipeline sits on reused deal IDs (F1). Every affected answer in this tool
+is flagged automatically; fixing the source data clears the flags.</div>
+<div class="tiles">
+<div class="tile"><span>F1</span><b>13 deals</b><span>$1,970,000 at stake</span></div>
+<div class="tile"><span>F2</span><b>7 deals</b><span>$576,000 at stake</span></div>
+<div class="tile"><span>F3</span><b>2 deals</b><span>$87,000 at stake</span></div>
+<div class="tile"><span>F4</span><b>3 deals</b><span>$373,000 at stake</span></div>
+<div class="tile"><span>F5</span><b>3 deals</b><span>$260,000 at stake</span></div>
+</div>
+<div class="ev">Chart: red bars of value touched per finding. Source data:
+all 28 affected rows tagged per finding, plus the final-Q1-book versions of
+the re-dated and edited deals for side-by-side comparison.</div>
+</div>
+
+<div class="say">Note the badge — this is the one answer that's fully
+green. The single thing this dataset supports with total confidence is a
+precise description of its own problems. "What's wrong with my data" is a
+one-click question on purpose: data quality stopped being an IT topic the
+moment it started deciding which reps look like failures.</div>
+</div>
+
+<!-- ============ CH 9 ============ -->
+<div class="chapter">
+<h2>9 · Sample question 6 — type "How is Priya Patel doing?"</h2>
+
+<div class="shot">
+<div class="shot-top"><span class="route">Individual rep performance · rep
+name "Priya Patel"</span><span class="pill p-red"><i></i>Insufficient data</span></div>
+<div class="headline">Priya Patel (REP-03, Enterprise Northeast) has closed
+$0 of a $1,000,000 Q2 quota (0.0%), with $740,000 open pipeline covering
+the gap 0.74x. Status: Insufficient data. This rep's pipeline is dominated
+by reused deal IDs — the records need correction before performance
+conclusions are reliable.</div>
+<div class="tiles">
+<div class="tile"><span>QUOTA</span><b>$1,000,000</b></div>
+<div class="tile"><span>BOOKED</span><b>$0</b><span>0 deals</span></div>
+<div class="tile"><span>ATTAINMENT</span><b>0.0%</b><span>pace 0.00</span></div>
+<div class="tile"><span>PIPELINE</span><b>$740,000</b><span>4 open deals</span></div>
+<div class="tile"><span>COVERAGE</span><b>0.74x</b></div>
+<div class="tile"><span>STATUS</span><b>Insufficient data</b></div>
+</div>
+<div class="w">61% of this rep's open pipeline value sits on reused deal
+IDs (F1).</div>
+</div>
+
+<div class="say">On paper she looks terrible — zero booked, pipeline
+short. A naive tool would flag her as failing. This one refuses: 61% of
+her pipeline is corrupted records, so the verdict is "fix the data before
+judging the person." The action item is a records cleanup, then re-ask —
+and the tool will grade her the moment the data deserves it.</div>
+</div>
+
+<!-- ============ CH 10 ============ -->
+<div class="chapter">
+<h2>10 · Sample question 7 — type "How is Tom Bradley doing?"</h2>
+<p>The deliberate contrast with Priya — the best performer, with an
+asterisk the tool refuses to hide.</p>
+
+<div class="shot">
+<div class="shot-top"><span class="route">Individual rep performance · rep
+name "Tom Bradley"</span><span class="pill p-red"><i></i>Insufficient data</span></div>
+<div class="headline">Tom Bradley (REP-08, Mid-Market Southeast) has closed
+$293,000 of a $520,000 Q2 quota (56.3%), with $220,000 open pipeline
+covering the gap 0.97x. Status: Watch. Caution: $208,000 of this booked
+figure was already recorded as won in the final Q1 book (re-dated close
+date) — strictly new Q2 revenue is $85,000.</div>
+<div class="tiles">
+<div class="tile"><span>QUOTA</span><b>$520,000</b></div>
+<div class="tile"><span>BOOKED</span><b>$293,000</b><span>3 deals</span></div>
+<div class="tile"><span>ATTAINMENT</span><b>56.3%</b><span>pace 1.60</span></div>
+<div class="tile"><span>PIPELINE</span><b>$220,000</b><span>3 open deals</span></div>
+<div class="tile"><span>COVERAGE</span><b>0.97x</b></div>
+<div class="tile"><span>STATUS</span><b>Watch</b></div>
+</div>
+<div class="w">$208,000 of this rep's Q2 booked revenue (71%) is from F4
+re-dated deals also counted in the final Q1 book.</div>
+<div class="w">39% of this rep's open pipeline value sits on reused deal
+IDs (F1).</div>
+</div>
+
+<div class="say">Here's the tool being fair in the other direction. Tom is
+the quarter's standout — 56.3%, pace 1.60 — and his <i>risk status</i> is
+still Watch, computed on the numbers as recorded. But the trust badge goes
+red anyway, because 71% of his booked figure is re-dated Q1 revenue:
+strictly new, he's at $85,000. Same rules for the struggling rep and the
+star — that symmetry is what fairness looks like in software.</div>
+</div>
+
+<!-- ============ CH 11 ============ -->
+<div class="chapter">
+<h2>11 · Sample question 8 — type "How is SMB tracking?"</h2>
+
+<div class="shot">
+<div class="shot-top"><span class="route">Segment performance · segment
+"smb"</span><span class="pill p-amber"><i></i>Verified with assumptions</span></div>
+<div class="headline">SMB has closed $0 of its $510,000 Q2 quota (0.0%)
+with 35% of the quarter elapsed. Open pipeline of $413,000 covers the
+remaining gap 0.81x — below the 1.28x needed at Q1's realized win
+rate.</div>
+<div class="tiles">
+<div class="tile"><span>BOOKED</span><b>$0</b><span>0 deals</span></div>
+<div class="tile"><span>QUOTA</span><b>$510,000</b><span>2 SMB reps</span></div>
+<div class="tile"><span>ATTAINMENT</span><b>0.0%</b></div>
+<div class="tile"><span>PIPELINE</span><b>$413,000</b><span>11 open deals</span></div>
+<div class="tile"><span>COVERAGE</span><b>0.81x</b></div>
+</div>
+<div class="w">$96,000 of SMB open pipeline is deals already closed in the
+final Q1 book that have reopened (F2).</div>
+<div class="w">2 open deals in this segment are past their expected close
+date (OPP-066, OPP-075).</div>
+</div>
+
+<div class="say">Worth a sentence in passing: SMB has booked nothing — but
+it's also the only segment whose pipeline is completely free of reused-ID
+records. Zero revenue, cleanest data. The badges track data health, not
+performance — which is exactly what a trust grade should do.</div>
+</div>
+
+<!-- ============ CH 12 ============ -->
+<div class="chapter">
+<h2>12 · Sample question 9 — type "Show me the pipeline"</h2>
+
+<div class="shot">
+<div class="shot-top"><span class="route">Company pipeline summary ·
+keyword "pipeline"</span><span class="pill p-amber"><i></i>Verified with assumptions</span></div>
+<div class="headline">Company-wide, Q2 stands at $518,000 closed of a
+$6,200,000 quota (8.4%) with $5,198,000 of open in-quarter pipeline (46
+deals). Even if every open deal closed, $484,000 of quota would remain
+uncovered — new pipeline creation is the immediate priority.</div>
+<div class="tiles">
+<div class="tile"><span>Q2 QUOTA</span><b>$6,200,000</b><span>all 10 reps</span></div>
+<div class="tile"><span>BOOKED</span><b>$518,000</b><span>5 deals · 8.4%</span></div>
+<div class="tile"><span>OPEN PIPELINE</span><b>$5,198,000</b><span>46 deals</span></div>
+<div class="tile"><span>UNCOVERED</span><b>$484,000</b><span>even at 100% win rate</span></div>
+</div>
+<div class="w">$373,000 of the $518,000 booked (72%) comes from F4 re-dated
+deals — strictly new Q2 revenue is $145,000.</div>
+<div class="w">$1,970,000 (38%) of open pipeline sits on reused deal IDs
+(F1).</div>
+<div class="w">$466,000 of open pipeline is deals already closed in the
+final Q1 book and reopened in Q2 (F2).</div>
+<div class="ev">Chart: pipeline by stage — Discovery $1,678,000 · Proposal
+$1,977,000 · Negotiation $1,543,000 · <b>Prospecting $0 — empty</b>.
+Source data: the 10 largest open deals (reused-ID rows tagged).</div>
+</div>
+
+<div class="say">Look at the stage chart: the first stage — Prospecting —
+is completely empty. Nothing new is being seeded. This quarter's problem
+is coverage; next quarter's problem is being created right now. That empty
+bar might be the most strategic pixel in the product.</div>
+</div>
+
+<!-- ============ CH 13 ============ -->
+<div class="chapter">
+<h2>13 · The refusals — two questions it will not answer</h2>
+
+<h3>Type: "What will Q3 revenue be?"</h3>
+<div class="shot">
+<div class="shot-top"><span class="route">Not supported · out of scope: no
+data for "q3"</span><span class="pill p-gray"><i></i>Refused</span></div>
+<div class="headline">I cannot answer that reliably from the current
+dataset. The available data supports questions about quota, attainment,
+deals, representatives, segments, regions, and quarter-over-quarter
+comparisons.</div>
+<div class="ev">Below the refusal: the list of the eight supported
+analyses. The refusal is also written to the audit log.</div>
+</div>
+
+<h3>Type: "Who will win the World Cup?" (or invite the panel to ask anything)</h3>
+<div class="shot">
+<div class="shot-top"><span class="route">Not supported · no approved
+intent matched</span><span class="pill p-gray"><i></i>Refused</span></div>
+<div class="headline">Same honest refusal — no improvisation, no numbers,
+no guess.</div>
+</div>
+
+<div class="say">This is the moment to hand the keyboard to the panel:
+"ask it anything — genuinely." Off-menu questions hit an honest refusal;
+future questions hit "no data exists." The previous tool's fatal habit was
+improvising when it didn't know. This one treats "I can't answer that
+reliably" as a first-class answer — and every refusal becomes backlog for
+the next audited analysis.</div>
+</div>
+
+<!-- ============ CH 14 ============ -->
+<div class="chapter">
+<h2>14 · What changes when the AI is on</h2>
+
+<p>Everything above is the deterministic engine — it's what you get with
+the sidebar toggle off, and it's the exact material the AI is allowed to
+rephrase. With the toggle on, three things change (and only three):</p>
+
+<h3>1. Conversational phrasings route correctly</h3>
+<p>Type <b>"Are we going to make the number this quarter?"</b> — keyword
+rules alone can't place that, so the model picks from the menu. The
+routing line shows it: <i>"Company pipeline summary · LLM classification,
+validated against the approved intent catalog."</i> Same numbers as
+chapter 12 — the model only chose the menu item.</p>
+
+<h3>2. Answers read more naturally — with a proof line</h3>
+<p>The headline becomes the model's phrasing of the same computed package,
+and beneath it: <i>"AI summary · 11 numbers verified against computed
+results · deterministic wording under Calculation."</i> If the model had
+included even one number the engine didn't produce — even "$3.65M" as
+shorthand — the entire summary would be rejected, the engine's wording
+shown instead, and the rejection displayed. The guardrail is visible
+either way.</p>
+
+<h3>3. The toast confirms each check</h3>
+<p>Bottom-right after every answer: <i>"Answer verified — N numbers
+checked against the engine."</i></p>
+
+<div class="say">And if the AI provider goes down mid-demo? Flip the
+toggle — or don't even bother: the app degrades to exactly what you've
+seen in this document, automatically. We watched that happen during a real
+provider outage. The AI is the polish; the trust is in the machine
+underneath.</div>
+</div>
+
+<!-- ============ CH 15 ============ -->
+<div class="chapter">
+<h2>15 · The demo cheat sheet</h2>
+
+<table>
+<tr><th>#</th><th>Do</th><th>The one thing to land</th></tr>
+<tr><td>0</td><td>Resting screen (1 min)</td><td>"$484,000 uncovered even
+at a 100% win rate — the quarter's real headline, before any
+question."</td></tr>
+<tr><td>1</td><td>Enterprise chip</td><td>Red badge; numerator is one row;
+strictly-new = $0.</td></tr>
+<tr><td>2</td><td>Reps at risk chip</td><td>Three at risk — and three the
+tool refuses to judge. Data problem ≠ performance problem.</td></tr>
+<tr><td>3</td><td>Q2 vs Q1 chip</td><td>41% of last quarter's pace, and
+the alignment favors Q2 — the gap is real.</td></tr>
+<tr><td>4</td><td>Type "Are we going to make the number this
+quarter?"</td><td>LLM routing line + "N numbers verified" — AI on a
+visible leash.</td></tr>
+<tr><td>5</td><td>Type "How is Priya Patel doing?"</td><td>The refusal to
+grade a person on corrupted records.</td></tr>
+<tr><td>6</td><td>Data quality chip</td><td>The only green answer; "fix
+the data and the flags clear themselves."</td></tr>
+<tr><td>7</td><td>Type "What will Q3 revenue be?" — or hand the panel the
+keyboard</td><td>Honest refusal. "Eight trusted answers beat eight
+thousand plausible ones."</td></tr>
+</table>
+
+<p class="small">Recovery: AI down → sidebar toggle off, narrate graceful
+degradation as a feature. App down → this document and the one-page
+leave-behind carry the entire walkthrough on paper.</p>
+
+<hr>
+<p class="small">The Live App Walkthrough · outputs quoted verbatim from
+the deterministic engine · Meridian Pipeline Intelligence · Sai Saran</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Meridian Pipeline Intelligence — Presenter's Guide</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue',
+                   'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+  :root { --ink:#1D1D1F; --sub:#6E6E73; --faint:#86868B; --line:#E5E5EA;
+          --accent:#0071E3; --green:#1E7E34; --green-bg:#E9F7EC;
+          --amber:#955300; --amber-bg:#FFF4E0; --red:#C2352B; --red-bg:#FDECEB; }
+  body { background:#fff; color:var(--ink); max-width:820px; margin:0 auto;
+         padding:40px 30px; font-size:13.5px; line-height:1.62; }
+  @media print { body{padding:0;} @page{margin:16mm 15mm;}
+                 .chapter{page-break-before:always;} .cover{page-break-before:avoid;} }
+
+  h1 { font-size:26px; font-weight:700; letter-spacing:-.02em; margin-bottom:6px;}
+  h2 { font-size:19px; font-weight:700; letter-spacing:-.015em;
+       margin:26px 0 4px; }
+  h2 .t { font-size:11px; color:var(--faint); font-weight:600; float:right;
+          margin-top:8px; }
+  h3 { font-size:14.5px; font-weight:650; margin:18px 0 6px; }
+  p  { margin:8px 0; color:#2B2B2E; }
+  .lead { color:var(--sub); font-size:14.5px; }
+  em { color:var(--sub); }
+  b, strong { color:var(--ink); }
+  ul, ol { margin:8px 0 8px 22px; }
+  li { margin:4px 0; color:#2B2B2E; }
+
+  .kicker { font-size:10.5px; font-weight:700; letter-spacing:.12em;
+            text-transform:uppercase; color:var(--accent); margin-bottom:8px;}
+
+  .app { border:1px solid #BBD6F5; background:#F4F9FF; border-radius:10px;
+         padding:10px 14px; margin:12px 0; font-size:12.5px; }
+  .app::before { content:'SHOW IN THE APP'; display:block; font-size:9.5px;
+         font-weight:700; letter-spacing:.1em; color:var(--accent);
+         margin-bottom:3px; }
+  .say { border-left:3px solid #34C759; background:#F4FBF5; border-radius:0 10px 10px 0;
+         padding:10px 14px; margin:12px 0; font-size:12.8px; font-style:italic;
+         color:#1F3D26; }
+  .say::before { content:'KEY LINE — say it in these words'; display:block;
+         font-style:normal; font-size:9.5px; font-weight:700;
+         letter-spacing:.1em; color:var(--green); margin-bottom:3px; }
+  .warnbox { border-left:3px solid #FF9500; background:#FFFBF4;
+         border-radius:0 10px 10px 0; padding:9px 14px; margin:10px 0;
+         font-size:12.5px; }
+
+  table { width:100%; border-collapse:collapse; font-size:12px; margin:10px 0;}
+  th { text-align:left; font-size:10px; font-weight:700; letter-spacing:.06em;
+       text-transform:uppercase; color:var(--faint); padding:5px 10px 5px 0;
+       border-bottom:1px solid var(--line); }
+  td { padding:6px 10px 6px 0; border-bottom:1px solid #F0F0F2;
+       vertical-align:top; }
+  td.num { font-variant-numeric:tabular-nums; font-weight:600; white-space:nowrap;}
+  .small { font-size:11.5px; color:var(--sub); }
+
+  .pill { display:inline-flex; align-items:center; gap:5px; font-size:10.5px;
+          font-weight:600; padding:2px 10px; border-radius:999px; }
+  .pill i { width:6px;height:6px;border-radius:50%;display:inline-block;font-style:normal;}
+  .p-red{background:var(--red-bg);color:var(--red);} .p-red i{background:#FF3B30;}
+  .p-amber{background:var(--amber-bg);color:var(--amber);} .p-amber i{background:#FF9500;}
+  .p-green{background:var(--green-bg);color:var(--green);} .p-green i{background:#34C759;}
+
+  .toc td { border:none; padding:3px 0; }
+  .cover-meta { color:var(--faint); font-size:12px; margin:10px 0 26px; }
+  hr { border:none; border-top:1px solid var(--line); margin:18px 0; }
+  .chapter { margin-top:10px; }
+  code { font-family:'SF Mono', ui-monospace, Menlo, monospace; font-size:12px;
+         background:#F5F5F7; border-radius:5px; padding:1px 6px; }
+</style>
+</head>
+<body>
+
+<!-- ======================= COVER ======================= -->
+<div class="cover">
+<div class="kicker">Presenter's guide · client walkthrough companion</div>
+<h1>Meridian Pipeline Intelligence</h1>
+<p class="lead">Everything you need to explain the web application clearly, in
+plain English, for a 60-minute client walkthrough — what it does, how it
+works, what the data revealed, and why it can be trusted.</p>
+<div class="cover-meta">Scenario: Meridian Systems sales-intelligence
+engagement · Data as of May 2, 2026 (Q1 final, Q2 day 32 of 91) ·
+Prepared by Sai Saran</div>
+
+<h3>How to use this document</h3>
+<p>Each chapter has a suggested time in its heading; the total is roughly 60
+minutes. Blue boxes tell you <b>what to show in the app</b> at that moment.
+Green boxes give you a <b>key line</b> worth saying close to word-for-word.
+You do not need to cover everything — chapters 1–7 are the core; 8–12 are
+depth you can pull in when questions go there.</p>
+
+<table class="toc">
+<tr><td><b>1.</b> The client's problem</td><td class="small">5 min</td></tr>
+<tr><td><b>2.</b> What we built — the tour</td><td class="small">6 min</td></tr>
+<tr><td><b>3.</b> The data we received</td><td class="small">5 min</td></tr>
+<tr><td><b>4.</b> The five data findings</td><td class="small">8 min</td></tr>
+<tr><td><b>5.</b> How the app answers a question</td><td class="small">6 min</td></tr>
+<tr><td><b>6.</b> The eight analyses, one by one</td><td class="small">12 min</td></tr>
+<tr><td><b>7.</b> The trust system</td><td class="small">5 min</td></tr>
+<tr><td><b>8.</b> The AI layer — what the model may and may not do</td><td class="small">5 min</td></tr>
+<tr><td><b>9.</b> How everything was verified</td><td class="small">4 min</td></tr>
+<tr><td><b>10.</b> What the business should do with this</td><td class="small">4 min</td></tr>
+<tr><td><b>11.</b> Limits, and the road to production</td><td class="small">3 min</td></tr>
+<tr><td><b>12.</b> Question-and-answer preparation</td><td class="small">as needed</td></tr>
+<tr><td><b>Appendix A.</b> Glossary of every term</td><td class="small">reference</td></tr>
+<tr><td><b>Appendix B.</b> Every number in the demo</td><td class="small">reference</td></tr>
+<tr><td><b>Appendix C.</b> Suggested demo run-order</td><td class="small">reference</td></tr>
+</table>
+</div>
+
+<!-- ======================= CH 1 ======================= -->
+<div class="chapter">
+<h2>1 · The client's problem <span class="t">≈ 5 min</span></h2>
+
+<p>Meridian Systems sells enterprise software. Their sales organization is
+large and spread out, and the information about how sales are going lives in
+several disconnected places — dashboards that don't talk to each other, and
+analysts who prepare reports on request. The data exists. Getting an answer
+out of it is the problem.</p>
+
+<p>When a senior leader asks something simple — <em>"How is the Enterprise
+segment tracking against quota this quarter?"</em> — the honest answer today
+is: wait. Wait for an analyst to pull the numbers, or bounce between three
+dashboards and reconcile them yourself. Decisions slow down. Eventually,
+leaders stop asking questions altogether, and start running the business on
+gut feel. That is the real cost: not wrong answers, but <b>unasked
+questions</b>.</p>
+
+<p>Eighteen months ago they tried to fix this with an AI reporting tool. It
+made up numbers — the industry word is "hallucinated" — and mixed up customer
+segments. The Chief Commercial Officer caught it doing so in a meeting, in
+front of people. There is no formal ban on AI at Meridian, but the skepticism
+is real, and it starts at the very top.</p>
+
+<div class="say">The bar here was never "does it work." The bar is "can we
+trust it." Every design decision in what I'm about to show you was made to
+clear that second bar.</div>
+
+<p>So the assignment was: build something that lets a sales leader ask a
+plain-English question about the pipeline and get back three things — a
+<b>direct answer</b> (not a hedge), the <b>actual data behind the answer</b>
+(not "based on your data"), and a <b>clear flag</b> whenever the answer
+involves incomplete data, ambiguity, or an assumption.</p>
+
+<p>One framing worth stating up front: the product I'll show you competes
+with <em>distrust</em>, not with dashboards. Its job is to be the first
+AI-flavored tool this CCO doesn't have to double-check — and it earns that by
+double-checking itself, visibly, on every answer.</p>
+</div>
+
+<!-- ======================= CH 2 ======================= -->
+<div class="chapter">
+<h2>2 · What we built — the tour <span class="t">≈ 6 min</span></h2>
+
+<p>What we built is a small web application. It looks and feels like a chat:
+a leader types a question in ordinary English, and gets back an answer. But
+under the surface it behaves nothing like a chatbot — and that difference is
+the whole point. Walk the client through the screen top to bottom.</p>
+
+<div class="app">Open the app full-screen. Don't ask anything yet — tour the
+resting state first. It already tells the story of the quarter before a
+single question is asked.</div>
+
+<h3>The header and the four big numbers</h3>
+<p>At the top: the product name and one sentence of promise — <em>"numbers
+are computed, never generated."</em> Below it, four cards that animate up
+when the page loads. These are the state of the quarter at a glance:</p>
+<ul>
+<li><b>Q2 quota — $6,200,000.</b> The total sales target for the ten
+salespeople this quarter.</li>
+<li><b>Booked, Closed-Won — $518,000.</b> Deals actually won so far. Note
+the small print: <em>"strictly new $145,000 (F4)"</em>. The tool is already
+disclosing a data problem — we'll get to it — where most of that $518K was
+arguably counted last quarter too.</li>
+<li><b>Open pipeline — $5,198,000.</b> The value of deals still being worked
+that are expected to close this quarter. The card explicitly says this is
+<em>not booked revenue</em> — it's potential, not money.</li>
+<li><b>Uncovered quota — $484,000.</b> The most important number on the
+screen: even if Meridian won <em>every single open deal</em>, they would
+still fall $484,000 short of the quarter's target. No optimism required to
+compute that — it's subtraction.</li>
+</ul>
+
+<div class="say">Before anyone asks a single question, the tool has already
+told you the quarter's headline: the math doesn't close. Even a perfect win
+rate leaves you $484,000 short — so the conversation isn't "will we win our
+deals," it's "we need to create pipeline, now."</div>
+
+<h3>The left sidebar — the tool's conscience</h3>
+<p>The sidebar is where the tool is honest about itself:</p>
+<ul>
+<li><b>Data status:</b> "Data validated · 5 reconciliations passed." Every
+time the app starts, it re-checks its own math five different ways (totals
+computed deal-by-deal must equal totals computed per-person and per-segment,
+and so on). If any check fails, the app refuses to show numbers at all.</li>
+<li><b>AI assist:</b> a switch showing whether the language model is on, and
+a one-line contract: the model helps with wording and routing, but
+<em>numbers are always computed, never generated</em>. Flip the switch off
+live if you want — the app keeps working.</li>
+<li><b>Known data issues:</b> five findings, labeled F1 through F5, that the
+tool discovered in Meridian's data <em>by itself</em>, automatically, when it
+loaded the files. This list is Chapter 4 — it's the most valuable output of
+the whole engagement.</li>
+<li><b>Methodology:</b> every metric definition, every threshold, every
+assumption — written down where any skeptic can read it.</li>
+</ul>
+
+<h3>The suggested questions and the chat</h3>
+<p>Five capsule buttons — Enterprise vs quota, Reps at risk, Q2 vs Q1 pace,
+Regional view, Data quality — cover the questions leadership asks most, one
+click each. Below them, a free-text box for anything else. Each answer comes
+back as a card containing, in order: what the question was interpreted as, a
+color-coded trust badge, the answer in one or two plain sentences, the key
+numbers as tiles, a chart when one helps, any data-quality warnings, and
+three tabs — <b>Source data</b> (the actual rows behind the answer),
+<b>Calculation</b> (the exact arithmetic), and <b>Assumptions</b>.</p>
+
+<div class="say">Every answer in this tool comes with receipts. If you don't
+believe a number, you don't have to argue with the tool — you click one tab
+and read the exact rows it came from.</div>
+</div>
+
+<!-- ======================= CH 3 ======================= -->
+<div class="chapter">
+<h2>3 · The data we received <span class="t">≈ 5 min</span></h2>
+
+<p>Meridian shared four spreadsheet files — two snapshots of the same sales
+system, taken at two moments in time:</p>
+
+<table>
+<tr><th>File</th><th>What it is</th><th>Rows</th></tr>
+<tr><td><b>Q1 deals</b></td><td>Every sales opportunity as recorded when the
+books closed on Q1 (January–March 2026). Declared <b>final</b>.</td>
+<td class="num">88 deals</td></tr>
+<tr><td><b>Q1 reps</b></td><td>The ten salespeople, their territories, and
+their Q1 targets ("quotas").</td><td class="num">10 reps</td></tr>
+<tr><td><b>Q2 deals</b></td><td>The same deal table re-photographed on
+<b>May 2, 2026</b> — 32 days into Q2. Contains all the Q1 deals <em>plus</em>
+new Q2 activity.</td><td class="num">92 deals</td></tr>
+<tr><td><b>Q2 reps</b></td><td>The same ten people, now with Q2 targets
+added.</td><td class="num">10 reps</td></tr>
+</table>
+
+<h3>What a deal record contains, in business terms</h3>
+<ul>
+<li><b>Deal ID</b> — a serial number like OPP-042. Supposed to be a stable
+identity for one opportunity. (Chapter 4 will show it isn't.)</li>
+<li><b>Account</b> — the customer company being sold to.</li>
+<li><b>Segment</b> — the customer's size class: Enterprise (biggest),
+Mid-Market, or SMB (small business).</li>
+<li><b>Region</b> — West, Central, Northeast, or Southeast.</li>
+<li><b>Rep</b> — which salesperson owns the deal.</li>
+<li><b>Stage</b> — how far along the sale is: Prospecting → Discovery →
+Proposal → Negotiation, ending in either <b>Closed Won</b> (we got the
+business) or <b>Closed Lost</b> (we didn't).</li>
+<li><b>Deal value</b> — the dollar size.</li>
+<li><b>Close date</b> — when it closed, or for open deals, when the rep
+<em>expects</em> it to close. Important nuance: for open deals this is a
+forecast, not a fact — 44 of the 88 Q1 deals slipped their dates between the
+two snapshots.</li>
+</ul>
+
+<h3>Three ground rules we set before computing anything</h3>
+<ol>
+<li><b>A deal belongs to a quarter by its close date</b> — never by which
+file it appears in, because the Q2 file also contains all of Q1's
+history.</li>
+<li><b>Q1 is final means Q1 is final.</b> All Q1 reporting comes from the Q1
+file. When the Q2 snapshot quietly disagrees with closed Q1 history — and it
+does, repeatedly — we flag the disagreement rather than silently adopting
+either version.</li>
+<li><b>Won money and hoped-for money never mix.</b> "Attainment" counts only
+Closed-Won deals. Open pipeline is always shown separately, clearly labeled
+as not-yet-revenue.</li>
+</ol>
+
+<div class="say">These three rules sound obvious. The interesting thing is
+that the previous AI tool failed precisely because it had no rules like
+them — it blended files, blended quarters, and blended hope with revenue.
+Discipline about boring rules is where trust actually comes from.</div>
+</div>
+
+<!-- ======================= CH 4 ======================= -->
+<div class="chapter">
+<h2>4 · The five data findings <span class="t">≈ 8 min</span></h2>
+
+<p>Before building any answers, we compared the two snapshots record by
+record — the same forensic pass a careful analyst would do. Five distinct
+problems surfaced. Together they touch <b>28 of the 92 deals</b> in the
+current snapshot. The app detects all five automatically every time it loads:
+nothing is hardcoded, so if Meridian fixes the source data, the flags
+disappear on their own.</p>
+
+<div class="app">Click the <b>Data quality</b> chip. This entire chapter is
+on screen: the five findings as tiles, a red chart of dollar impact, and —
+in the Source data tab — every affected row, tagged, next to its Q1
+version. Note this is the one answer with a <b>green</b> badge: the report
+itself is exact.</div>
+
+<h3>F1 — Recycled deal IDs <span class="small">(13 deals · $1.97M · 38% of open pipeline)</span></h3>
+<p>Thirteen deal IDs — OPP-076 through OPP-088 — refer to <b>completely
+different companies</b> in the two snapshots. In Q1, OPP-076 was "Cascade
+Financial," a small-business deal, already won, worth $112,000. In Q2 the
+same ID is "Evergreen Capital," a Mid-Market prospect in early Discovery,
+worth $250,000. Someone deleted old records and reused their ID numbers.</p>
+<p><b>Why it matters:</b> any report that compares "the same deal" across
+time using these IDs produces nonsense. And it's not a corner case —
+$1,970,000, roughly 38% of the entire open pipeline, sits on these reused
+IDs. <b>Our policy:</b> the current rows are treated as the current system of
+record (they're real opportunities), but they are banned from any
+deal-history comparison, and every answer they touch carries a flag.</p>
+
+<h3>F2 — Closed deals that came back to life <span class="small">(7 deals · $576K)</span></h3>
+<p>Seven deals that were <b>closed</b> in the final Q1 book — some won, some
+lost — show up in the Q2 system as open again, or with a different outcome.
+For example, OPP-020 was recorded as Won in Q1; in Q2 it's back in
+Negotiation. <b>Why it matters:</b> "final" is supposed to mean final; a
+closed quarter's revenue shouldn't quietly change. Also, $466,000 of the
+current pipeline is deals like these — and $253,000 of that was already
+counted as Q1 revenue, so there is overlap between last quarter's results and
+this quarter's hopes. <b>Our policy:</b> Q1 reporting follows the closed Q1
+book; the deals count in Q2 only as open pipeline; the overlap is flagged
+wherever it appears.</p>
+
+<h3>F3 — Overdue open deals <span class="small">(2 deals · $87K)</span></h3>
+<p>Two open deals (OPP-066, OPP-075) are past the close dates their reps
+forecast. Minor hygiene, kept in the pipeline, flagged.</p>
+
+<h3>F4 — The big one: revenue counted in both quarters <span class="small">(3 deals · $373K · 72% of "Q2 booked")</span></h3>
+<p>Three deals — OPP-042, OPP-060, OPP-074 — are recorded as <b>Closed Won
+in both snapshots</b>, but their close dates were moved: won in late March
+according to the final Q1 book, won in early April according to the Q2
+system. The same revenue is counted in Q1's results <em>and</em> in Q2's
+results.</p>
+<p><b>Why it matters more than everything else:</b> of the $518,000 the Q2
+system calls "booked this quarter," $373,000 — seventy-two percent — is
+re-dated Q1 revenue. Truly <b>new</b> Q2 sales are $145,000. And for the
+Enterprise segment it's starker: its single Q2 win, $165,000, is one of these
+three deals — strictly new Enterprise revenue this quarter is <b>zero</b>.
+This is also an audit and compensation concern, not just an analytics one:
+moving revenue across a closed quarter boundary is the kind of thing finance
+teams get asked hard questions about.</p>
+<p><b>Our policy:</b> we don't rewrite the client's books unilaterally.
+Every affected answer shows both figures — the system-of-record number and
+the strictly-new number — and any answer where re-dated revenue dominates
+<b>downgrades its own trust badge to red</b>.</p>
+
+<div class="say">I want to be transparent about one thing: my first working
+version of this tool passed every test I'd written and still missed this
+finding. I caught it in an adversarial audit pass afterward — deliberately
+trying to refute my own outputs against the raw files. That experience is
+built into the product now: F4 detection is automatic, and it's why I'll
+never tell you this tool can't be wrong. I'll tell you it's built so that
+being wrong is detectable, attributable, and cheap to fix.</div>
+
+<h3>F5 — History edited after the books closed <span class="small">(3 deals · $260K)</span></h3>
+<p>Three closed deals had their value or date quietly edited between
+snapshots without their outcome changing. The clearest: OPP-021, closed and
+won in Q1 at $155,000 — the Q2 system now says the same closed deal was worth
+$120,000. A $35,000 write-down of history, unexplained. <b>Our policy:</b>
+Q1 reporting follows the Q1 file; the edits are surfaced, not silently
+adopted. <b>Why it matters:</b> anyone recomputing Q1 from the current system
+gets different Q1 totals than the closed books — a guaranteed
+"whose-number-is-right" meeting unless it's surfaced first.</p>
+
+<div class="warnbox"><b>The one-sentence summary of this chapter:</b> the
+question "what's wrong with my data?" turned out to be as valuable as any
+sales question — which is why we made it a first-class, one-click question
+in the tool itself.</div>
+</div>
+
+<!-- ======================= CH 5 ======================= -->
+<div class="chapter">
+<h2>5 · How the app answers a question <span class="t">≈ 6 min</span></h2>
+
+<p>This is the chapter where you explain the architecture — in plain
+English, because the idea is genuinely simple. The last AI tool failed
+because one system did two jobs: it both <em>understood the question</em>
+and <em>produced the numbers</em>. When the same model does both, every
+answer is a potential fabrication. We separated the jobs permanently.</p>
+
+<h3>The restaurant analogy</h3>
+<p>Think of it as a restaurant. The AI is the <b>waiter</b>: it listens to
+what you ask for, figures out which item on the menu you mean, and later
+describes the finished dish nicely. But the waiter never cooks. The
+<b>kitchen</b> is ordinary, boring, checkable computer code — the same
+arithmetic an analyst would do in a spreadsheet, just automated and
+double-checked. And the menu is short on purpose: <b>eight dishes</b>, each
+one prepared, tasted, and audited before it was ever served.</p>
+
+<h3>The five steps, every single time</h3>
+<ol>
+<li><b>Your question arrives.</b> "How is Enterprise tracking against
+quota?"</li>
+<li><b>Routing — choosing from the menu.</b> First, simple transparent
+keyword rules try to match the question to one of the eight analyses. If
+they can't, the AI is allowed one narrow job: pick which of the eight fits —
+it literally cannot answer anything else. If nothing fits, the tool
+<b>refuses</b>, politely and specifically. It never guesses.</li>
+<li><b>Computation — the kitchen.</b> Ordinary code filters the validated
+data and does the arithmetic. No AI is anywhere in this step. The same
+question always produces the same numbers.</li>
+<li><b>Narration with a veto.</b> The AI may rewrite the computed result
+into a friendly sentence or two. Then a <b>validator</b> — plain code —
+extracts every number from that sentence and checks each one against the
+numbers the kitchen actually produced. If even one number doesn't match, the
+whole AI sentence is thrown away and the tool shows its own plain wording
+instead — and tells you it did so. A made-up number <em>cannot reach the
+screen</em>.</li>
+<li><b>The answer ships with receipts:</b> source rows, the formula,
+warnings, assumptions, and a trust badge.</li>
+</ol>
+
+<div class="app">Type: <b>Are we going to make the number this quarter?</b>
+Point at the small gray line above the answer: "LLM classification, validated
+against the approved intent catalog" — the waiter chose from the menu. Then
+point at "AI summary · N numbers verified against computed results" — the
+veto in action.</div>
+
+<div class="say">Here's the trade we made, stated honestly: this tool can
+answer eight kinds of questions, not eight thousand. In exchange, the worst
+thing that can ever happen is a <b>visible</b> mistake — it picks the wrong
+menu item and you see that immediately at the top of the answer. The worst
+case of the unrestricted approach is an <b>invisible</b> mistake: a
+plausible, confident, wrong number. This client has already lived that. We
+chose the failure mode you can see.</div>
+
+<p>And the menu grows. Each new question type gets built, tested, and
+audited before it ever answers a leader — so capability expands
+week by week without ever re-opening the trust question.</p>
+</div>
+
+<!-- ======================= CH 6 ======================= -->
+<div class="chapter">
+<h2>6 · The eight analyses, one by one <span class="t">≈ 12 min</span></h2>
+
+<p>This is the heart of the demo. For each analysis: what it answers, how
+it's calculated in words, what it says about Meridian today, and what to
+show.</p>
+
+<h3>6.1 &nbsp;Enterprise vs quota &nbsp;<span class="pill p-red"><i></i>Insufficient data</span></h3>
+<p><b>The question:</b> "How is the Enterprise segment tracking against
+quota this quarter?" — the CCO's own example question.</p>
+<p><b>The calculation, in words:</b> add up every Enterprise deal won
+between April 1 and May 2 ($165,000 — it's one single deal, Sunridge
+Systems); divide by the combined Q2 targets of the four Enterprise reps
+($3,650,000). Result: <b>4.5% attainment</b> with 35% of the quarter gone.
+Then look at the open Enterprise pipeline: $3,600,000, which covers the
+remaining gap 1.03 times — below the 1.28× that history says is needed
+(explained in 6.2).</p>
+<p><b>But the badge is red.</b> The tool downgrades its own answer, because
+that entire $165,000 is F4 re-dated revenue — a deal the closed Q1 book says
+was won on March 20. Strictly new Enterprise revenue this quarter:
+<b>$0</b>. On top of that, $1,475,000 of the Enterprise pipeline sits on
+recycled IDs (F1) and $305,000 is reopened previously-closed deals (F2).</p>
+<div class="app">Click <b>Enterprise vs quota</b>. Open the Source data tab
+and show that the numerator is one row. Say: "when the answer is one deal,
+the tool shows you the deal."</div>
+<div class="say">A normal dashboard would show 4.5% and move on. This tool
+says: 4.5% is arithmetically correct and strategically misleading — and
+here's exactly why, down to the row.</div>
+
+<h3>6.2 &nbsp;Reps at risk &nbsp;<span class="pill p-amber"><i></i>Verified w/ assumptions</span></h3>
+<p><b>The question:</b> "Which reps are at risk of missing Q2?"</p>
+<p><b>How risk is decided — three visible signals, no black box:</b></p>
+<ul>
+<li><b>Pace</b> — what share of their target has each rep won, compared to
+how much of the quarter has passed (35%)?</li>
+<li><b>Coverage</b> — is there even enough open pipeline to close their
+remaining gap? Coverage below 1.0× means the target is <em>arithmetically
+unreachable</em> — even winning everything wouldn't get there. And 1.0× is
+generous: last quarter Meridian actually won 77.9 cents of every decided
+dollar, so realistically you need about <b>1.28×</b> coverage (1 ÷ 0.779).
+That threshold comes from <em>their own history</em>, not an industry rule
+of thumb.</li>
+<li><b>Record reliability</b> — if more than half a rep's pipeline sits on
+recycled IDs (F1), the tool refuses to judge the person at all.</li>
+</ul>
+<p><b>The verdicts today:</b> <b>At risk — Kevin Marsh, Lisa Park, Ryan
+Cole</b>: zero booked and coverage below 1.0×; the math is short no matter
+what. <b>Unclassifiable — Priya Patel, Danielle Torres, Aisha Williams</b>:
+54–67% of their pipeline is on corrupted records — that's a data problem,
+not a performance problem. Everyone else is "Watch." The standout performer
+is Tom Bradley at 56.3% of target — though the tool notes 71% of his booked
+figure is F4 re-dated revenue.</p>
+<p><b>The honest caveat the tool prints itself:</b> it's day 32, and seven
+of ten reps have booked nothing — but Q1 looked identical at day 32 (21%
+booked) and still finished at 102%. So "At risk" means "needs pipeline
+scrutiny now," not "will fail."</p>
+<div class="app">Click <b>Reps at risk</b>. Show the coverage chart with the
+two dashed lines: 1.0× (impossible below this) and 1.28× (break-even at
+their real win rate). Then point at the three gray "Insufficient data"
+rows.</div>
+<div class="say">This tool will tell you a rep is behind. It will refuse to
+tell you a rep is failing when the real problem is that their records are
+corrupted. That distinction protects careers — and it's exactly the judgment
+a hallucinating tool can't make.</div>
+
+<h3>6.3 &nbsp;Q2 vs Q1 at the same point &nbsp;<span class="pill p-amber"><i></i>Verified w/ assumptions</span></h3>
+<p><b>The question:</b> "How does Q2 attainment compare to where we were at
+the same point in Q1?"</p>
+<p><b>The fairness problem, solved simply:</b> "same point" is defined as
+<b>equal days elapsed</b> — today is day 32 of Q2, so we compare against Q1
+through <em>its</em> day 32, which was February 1. We checked the residual
+calendar effects: Q2's window actually has one <em>more</em> business day,
+so the alignment slightly favors Q2 — meaning the gap you're about to see is
+real, not an artifact.</p>
+<p><b>The result:</b> Q2 has booked $518,000 (8.4% of quota) versus
+$1,260,000 (21.3%) at the same point in Q1 — <b>about 41% of Q1's pace</b>.
+On a strictly-new basis (removing the $373K of F4 re-dated revenue) it's
+$145,000, and the gap widens further. Context that keeps it honest: Q1 was
+also slow early and finished at 102% ($6,041,000) — quarters here are
+back-loaded. But pace this far behind, plus pipeline that can't cover the
+gap, is why the tool's company-level conclusion is "create pipeline now."</p>
+<div class="app">Click <b>Q2 vs Q1 pace</b>. Show the two-bar chart, then the
+"Strictly-new Q2 wins: $145,000" tile.</div>
+
+<h3>6.4 &nbsp;Individual rep performance</h3>
+<p><b>Ask it live:</b> "How is Priya Patel doing?" — $0 booked of a
+$1,000,000 target, $740,000 pipeline covering 0.74×, and a <b>red badge</b>:
+61% of her pipeline is on recycled IDs, so the tool declines to draw
+performance conclusions and names the fix — correct her seven affected
+records, then re-ask. Also try Tom Bradley for the contrast: strong numbers,
+with the F4 asterisk shown plainly.</p>
+
+<h3>6.5 &nbsp;Segment performance</h3>
+<p>The same treatment as 6.1 for any segment. Useful contrast:
+<b>Mid-Market</b> is the healthiest segment — $353,000 booked (17.3%) —
+though $208K of it is re-dated; <b>SMB</b> has booked nothing, but is also
+the only segment whose pipeline is completely free of recycled IDs, so its
+answers carry cleaner badges.</p>
+
+<h3>6.6 &nbsp;Regional view</h3>
+<p>Revenue and pipeline broken down West / Central / Northeast / Southeast.
+One honest wrinkle the tool discloses: revenue is credited to the
+<em>deal's</em> region, but targets belong to the <em>rep's home</em>
+region — and some deals are sold outside their owner's home region. So
+regional attainment is labeled directional, with the mismatched deals listed
+in the Source tab. A neat example of the product's habit: it would rather
+give you an approximate number labeled approximate than a precise-looking
+number that quietly isn't.</p>
+
+<h3>6.7 &nbsp;Company pipeline summary</h3>
+<p>The whole quarter in one card: $518K booked of $6.2M, $5,198K open
+pipeline across 46 deals, and the $484K uncovered gap. Two warnings worth
+reading aloud: 38% of pipeline is on recycled IDs, and — quietly the most
+strategic fact in the dataset — <b>the Prospecting stage is empty</b>.
+Nothing new is being seeded. Next quarter's pipeline problem is being
+created right now.</p>
+
+<h3>6.8 &nbsp;Data quality report &nbsp;<span class="pill p-green"><i></i>Verified</span></h3>
+<p>Chapter 4 as a one-click answer. Green badge — the one thing this dataset
+supports with full confidence is a precise description of its own problems.
+Ends with the punchline: fix the source data and every flag in this tool
+clears itself automatically.</p>
+</div>
+
+<!-- ======================= CH 7 ======================= -->
+<div class="chapter">
+<h2>7 · The trust system <span class="t">≈ 5 min</span></h2>
+
+<p>Trust in this product isn't a promise — it's five specific, visible
+mechanisms. Walk through them slowly; this is the chapter the CCO cares
+about.</p>
+
+<h3>1. The trust badge on every answer</h3>
+<table>
+<tr><th>Badge</th><th>Exact meaning</th></tr>
+<tr><td><span class="pill p-green"><i></i>Verified</span></td>
+<td>Computed from validated records and no known data problem touches this
+answer.</td></tr>
+<tr><td><span class="pill p-amber"><i></i>Verified with assumptions</span></td>
+<td>The arithmetic is exact, but a known data issue or a stated assumption
+affects how you should read it. The specifics are printed directly below.</td></tr>
+<tr><td><span class="pill p-red"><i></i>Insufficient data</span></td>
+<td>A data defect <em>dominates</em> this answer — for example, most of the
+figure is re-dated revenue, or most of a rep's pipeline is on corrupted
+records. Treat it as a data problem to fix, not a conclusion to act on.</td></tr>
+</table>
+<p>The badge is decided by fixed rules, not by feel — e.g. "if more than
+half of booked revenue is F4 re-dated, downgrade to red." The rules are
+in the methodology panel.</p>
+
+<h3>2. Source data on every answer</h3>
+<p>The actual rows. Not a sample — for these answer sizes, all of them.
+Tagged, so a row that carries a known issue says so right in the table
+("ALSO in final Q1 revenue — close date moved").</p>
+
+<h3>3. The calculation, written out</h3>
+<p>Numerator, denominator, filter dates, thresholds — in the Calculation tab,
+legible enough to recompute on a napkin. Nothing is "proprietary scoring."</p>
+
+<h3>4. Warnings that attach themselves</h3>
+<p>Each of the five findings knows which answers it touches and prints
+itself there, quantified in dollars — not as a footnote in a manual
+somewhere.</p>
+
+<h3>5. Refusal as a feature</h3>
+<div class="app">Type: <b>What will Q3 revenue be?</b> Read the refusal out
+loud, including the list of what it <em>can</em> answer.</div>
+<p>No Q3 data exists, so the tool says so and stops. The previous tool's
+fatal habit was improvising when it didn't know. This one treats "I can't
+answer that reliably" as a first-class answer.</p>
+
+<h3>The six standing assumptions</h3>
+<p>Also always on screen (sidebar → Methodology), briefly: the May 2 as-of
+date comes from the brief, not the files; quarter membership follows close
+dates; attainment counts only won deals; segment roll-ups use the deal's
+segment (verified consistent); open-deal close dates are forecasts, not
+facts; and "same point in the quarter" means equal days elapsed. Every
+answer lists which of these it used.</p>
+</div>
+
+<!-- ======================= CH 8 ======================= -->
+<div class="chapter">
+<h2>8 · The AI layer — what the model may and may not do <span class="t">≈ 5 min</span></h2>
+
+<p>Expect this question in some form: <em>"so where exactly is the AI, and
+why won't it do what the last one did?"</em> The answer has three parts.</p>
+
+<h3>What the model is allowed to do — exactly two things</h3>
+<ol>
+<li><b>Route:</b> when simple keyword matching can't place a question, the
+model picks which of the eight analyses fits — from a fixed list, returning
+a single choice that is then re-checked against the list. If it names a
+salesperson or a segment, that name is verified against the actual roster
+before use. Output that doesn't validate is discarded.</li>
+<li><b>Phrase:</b> rewrite an already-computed result into two to four
+friendly sentences — under the numeric veto described in Chapter 5. Every
+number in the sentence must exist, verbatim, in the computed result, or the
+whole sentence is discarded and replaced with the engine's own wording. When
+that happens, the tool says so on screen — the guardrail is visible, which
+is itself a trust feature.</li>
+</ol>
+
+<h3>What the model can never do</h3>
+<p>It cannot calculate, estimate, or round a number. It cannot write a
+database query. It cannot choose a filter, a date range, or a definition. It
+cannot see a question outside the menu and improvise. The numeric path —
+from the CSV files to the tiles on screen — contains no AI at any point.</p>
+
+<h3>Two properties worth saying out loud</h3>
+<ul>
+<li><b>It degrades gracefully.</b> No API key, network trouble, the vendor
+having an outage — the app quietly falls back to keyword routing and its own
+deterministic wording. We've had this happen live; the user experience is
+that summaries get a little plainer. Nothing breaks. Flip the sidebar
+toggle to demonstrate on demand.</li>
+<li><b>It's vendor-agnostic.</b> During development this exact app ran on
+two different AI providers (Anthropic's Claude and Google's Gemini) —
+switched in one file, with <em>zero</em> change to any trust property.
+Because the guardrails live in our code, not in any vendor's model. That
+matters commercially: no lock-in, and the safety story survives procurement
+decisions.</li>
+</ul>
+
+<div class="say">The last tool trusted a model to be right. This one assumes
+the model can be wrong, and builds the checking into the product. That's the
+whole difference — trust placed in verifiable code, with the AI kept on a
+short, visible leash for the two jobs it's genuinely good at.</div>
+</div>
+
+<!-- ======================= CH 9 ======================= -->
+<div class="chapter">
+<h2>9 · How everything was verified <span class="t">≈ 4 min</span></h2>
+
+<p>"Can we trust it" deserves a concrete answer. Four layers:</p>
+
+<ul>
+<li><b>38 automated tests.</b> Every important number — the $518K, the
+$1.26M, the 4.5%, each rep's risk verdict — was first computed by hand from
+the raw files, then locked into a test. If the data or a rule ever changes,
+a named test fails loudly. The tests also cover the edge rules (what happens
+exactly at a threshold) and the AI validator itself (it must reject a
+sentence containing $999,999; it must reject "$3.65M" as an abbreviation of
+$3,650,000 — silent unit-changing is exactly the distortion we guard
+against).</li>
+<li><b>5 reconciliations on every launch.</b> The same totals computed
+independent ways must agree — deal-level booked must equal per-rep booked
+must equal per-segment booked; every row must land in exactly one bucket. If
+any check fails, the app refuses to serve numbers at all. It fails closed,
+like a bank, not open, like a demo.</li>
+<li><b>A measured router.</b> Routing accuracy isn't assumed — it's scored
+against a golden set of 24 phrasings: 21/24 on keyword rules alone, 22/24
+with the AI fallback, and — the important part — <b>every miss fails to an
+honest refusal or a visibly-labeled interpretation</b>, never to a wrong
+number.</li>
+<li><b>An adversarial audit.</b> After the tool worked, we attacked it:
+recomputed everything from raw files by hand looking for disagreements.
+That pass is what caught F4 — after all tests were green. The lesson is now
+product: F4 detection is automated, and the honest claim we make is not
+"never wrong" but "wrong is detectable, attributable, and cheap to fix."</li>
+</ul>
+
+<div class="say">I'd rather show you the crack we found and how the system
+now catches it than claim there are no cracks. A tool that advertises its
+own limitations accurately is the only kind this organization should trust
+with numbers.</div>
+</div>
+
+<!-- ======================= CH 10 ======================= -->
+<div class="chapter">
+<h2>10 · What the business should do with this <span class="t">≈ 4 min</span></h2>
+
+<p>The tool is the deliverable, but the data told a story with three action
+items. Present them as the analyst's summary — this is where you show
+business judgment, not just engineering.</p>
+
+<ol>
+<li><b>Create pipeline immediately.</b> The quarter's arithmetic doesn't
+close: $484,000 uncovered even at a perfect win rate, coverage below the
+historical break-even in every segment, and — the leading indicator —
+<b>zero deals in Prospecting</b>. The Q1 finished-strong pattern (21% at day
+32 → 102% final) buys some calm about the current pace, but nothing back-fills
+an empty top of funnel. This is the "act this week" item.</li>
+<li><b>Run a CRM hygiene sprint before the next QBR.</b> Twenty-eight deals
+carry defects; three reps can't even be evaluated because of them; and the
+F4 re-dating means Q1 and Q2 currently share $373,000 of revenue. Fixing
+~30 records is days of work, and every flag in this tool clears itself when
+they do. Owner: sales operations, with finance eyes on the F4 deals
+specifically.</li>
+<li><b>Adopt "strictly new" as a standing lens.</b> Until re-dating is
+impossible (see Chapter 11), leadership should look at both figures the tool
+shows: system-of-record bookings <em>and</em> strictly-new bookings. Today
+those are $518K vs $145K — different enough to change decisions.</li>
+</ol>
+
+<p>And one meta-recommendation: make "what's wrong with my data?" a standing
+leadership question. The tool made it one click on purpose — data quality
+stopped being an IT topic the moment it started deciding which reps look
+like failures.</p>
+</div>
+
+<!-- ======================= CH 11 ======================= -->
+<div class="chapter">
+<h2>11 · Limits, and the road to production <span class="t">≈ 3 min</span></h2>
+
+<h3>What this prototype honestly doesn't prove</h3>
+<ul>
+<li><b>Scale:</b> it runs on 180 rows of CSV, not millions of rows of live
+CRM. (The design ports: the eight analyses become governed warehouse queries;
+the checks become pipeline tests.)</li>
+<li><b>Open-ended language:</b> eight question types, honestly labeled — not
+"ask anything." Coverage grows intent by intent, each audited first.</li>
+<li><b>Live messiness:</b> real Salesforce data has more failure modes than
+two snapshots can show. The audit posture — detect, disclose, downgrade —
+is the durable part.</li>
+<li><b>No forecasting on purpose:</b> the data contains no stage-history
+from which honest win probabilities could be derived, so the tool refuses to
+weight its pipeline. Inventing probabilities is precisely how the last tool
+died; we'd rather show coverage against the real 77.9% win rate.</li>
+</ul>
+
+<h3>The production path, in one paragraph each</h3>
+<p><b>Weeks 1–3, foundation:</b> the engine moves behind an API; CSVs are
+replaced by read-only connections to Salesforce data replicated into a
+warehouse (e.g. Snowflake); the validation checks move upstream into the
+data pipeline and block bad data before it's ever queryable; single-sign-on
+and role-based access (a regional leader sees their region; rep-level risk
+labels get governance with HR/sales ops before anyone sees them).</p>
+<p><b>The one upgrade that matters most — snapshot journaling:</b> recording
+every change to every deal, every day. With a change journal, F4-style
+re-dating isn't something a clever audit catches later — it's <b>impossible
+to hide</b> the moment it happens: "closed-won close dates don't move across
+quarter boundaries without a flag" becomes a standing monitored rule.</p>
+<p><b>Then a pilot:</b> three sales leaders, the current analyses, two
+commitments — every question the tool refuses becomes backlog for a new
+audited intent, and every challenged number gets an answer within a day. The
+pilot's success metric is behavioral: are leaders asking questions again?
+That was the original problem, and it's the thing worth measuring.</p>
+</div>
+
+<!-- ======================= CH 12 ======================= -->
+<div class="chapter">
+<h2>12 · Question-and-answer preparation <span class="t">as needed</span></h2>
+
+<p><b>"How do we know it isn't hallucinating right now?"</b><br>
+Numbers never come from the model — they come from ordinary code you can
+read, tested against hand-checked values. The model's sentences pass a
+validator that rejects any number the code didn't produce, and you can see
+the check on screen ("11 numbers verified"). And here's the strongest
+answer: pick any number on this screen, and I'll show you the rows and the
+arithmetic behind it, live.</p>
+
+<p><b>"Why can't I ask it anything I want?"</b><br>
+Because unlimited questions require the model to invent the analysis, and an
+invented analysis can be invisibly wrong — that's the exact failure you
+experienced. A short menu of audited analyses makes the worst case a visible
+misroute instead. The menu grows every week; the trust rule doesn't.</p>
+
+<p><b>"Is Priya actually underperforming?"</b><br>
+Unknowable from this data, and the tool says so — 61% of her pipeline sits
+on corrupted records. The action is to fix her seven records, then re-ask.
+The tool distinguishing "bad data" from "bad performance" is the point.</p>
+
+<p><b>"Which number is right — $518K or $145K?"</b><br>
+Both are computed correctly from different premises. $518K is what the
+current system of record says Q2 has booked; $145K excludes the three deals
+your closed Q1 book already counted. Which premise to bless is a
+finance-policy decision — the tool's job is to make sure you know there's a
+decision to make, which until now you didn't.</p>
+
+<p><b>"What happens when the data gets fixed?"</b><br>
+Every finding is detected fresh from the files at each load. Fix the
+records, restart, and the flags disappear on their own — including the red
+badges. Nothing is hardcoded.</p>
+
+<p><b>"Why did you build an app instead of a deck?"</b><br>
+Because the assignment's hard requirement — trust — can't be demonstrated on
+a slide. Refusals, red badges, and a validator have to be experienced to be
+believed. The deck version of "it shows source rows" is a claim; the app
+version is proof.</p>
+
+<p><b>"What did it cost / what does it run on?"</b><br>
+It runs anywhere Python runs. AI usage is pennies per session — questions
+are routed for fractions of a cent and summaries are a few hundred words.
+And the AI is optional: with it off, the tool remains fully functional.</p>
+
+<p><b>"Did you use AI to build it?"</b><br>
+Yes, as a pair-programmer — the brief encourages it and says how you use it
+is part of the evaluation. The division of labor: AI accelerated the code;
+the design decisions, the metric definitions, the audit that found F4, and
+the verification standards were mine — and every generated line ended up
+covered by the 38 tests. Using AI with guardrails to build a tool whose
+whole point is AI with guardrails felt appropriately consistent.</p>
+
+<p><b>"What would you do with another four hours?"</b><br>
+Three things: a "challenge this number" button that files a review ticket
+with the answer's full context; region and product-line intents (the
+router already refuses those honestly); and exporting any answer — evidence,
+formula, flags — as a one-page PDF for meeting handouts.</p>
+</div>
+
+<!-- ======================= APPENDIX A ======================= -->
+<div class="chapter">
+<h2>Appendix A · Glossary — every term, in plain English</h2>
+<table>
+<tr><th>Term</th><th>Meaning</th></tr>
+<tr><td><b>Quota</b></td><td>A salesperson's dollar target for the quarter.
+Company total for Q2: $6.2M across ten reps.</td></tr>
+<tr><td><b>Closed-Won / booked</b></td><td>A deal that was actually won.
+The only thing that counts toward attainment.</td></tr>
+<tr><td><b>Attainment</b></td><td>Booked revenue ÷ quota. "4.5%" means
+$4.50 won for every $100 of target.</td></tr>
+<tr><td><b>Open pipeline</b></td><td>Total value of deals still being
+worked and expected to close this quarter. Potential, not revenue; never
+blended into attainment.</td></tr>
+<tr><td><b>Coverage</b></td><td>Open pipeline ÷ the remaining gap to quota.
+1.0× = you'd need to win literally everything. Below 1.0× = target
+arithmetically unreachable.</td></tr>
+<tr><td><b>Break-even coverage (1.28×)</b></td><td>Coverage needed at the
+win rate Meridian actually achieved in Q1 — they won 77.9 cents of every
+decided dollar, and 1 ÷ 0.779 ≈ 1.28. Derived from their data, not an
+industry rule.</td></tr>
+<tr><td><b>Pace</b></td><td>Attainment compared to how much of the quarter
+has elapsed (35% at day 32). Pace 1.0 = exactly on a straight-line
+track.</td></tr>
+<tr><td><b>Same point in quarter</b></td><td>Equal days elapsed: Q2 through
+May 2 (day 32) vs Q1 through Feb 1 (its day 32).</td></tr>
+<tr><td><b>Strictly new</b></td><td>Q2 bookings excluding the three F4
+deals the closed Q1 book already counted. $145K vs the headline
+$518K.</td></tr>
+<tr><td><b>Snapshot</b></td><td>A photograph of the whole deal table at a
+moment in time. We have two: quarter-end Q1, and May 2.</td></tr>
+<tr><td><b>Hallucination</b></td><td>An AI stating something false with
+confidence — here specifically, inventing numbers. The failure this
+product is built to make impossible in the numeric path.</td></tr>
+<tr><td><b>Deterministic</b></td><td>Same inputs, same outputs, every time —
+ordinary code, no AI involved. The property that makes checking
+possible.</td></tr>
+<tr><td><b>Fail closed</b></td><td>When validation fails, show nothing
+rather than something possibly wrong.</td></tr>
+</table>
+</div>
+
+<!-- ======================= APPENDIX B ======================= -->
+<div class="chapter">
+<h2>Appendix B · Every number in the demo</h2>
+
+<h3>Company, Q2 as of May 2</h3>
+<table>
+<tr><td>Quota (10 reps)</td><td class="num">$6,200,000</td>
+<td>Booked</td><td class="num">$518,000 · 8.4%</td></tr>
+<tr><td>Strictly new (excl. F4)</td><td class="num">$145,000</td>
+<td>Open pipeline (46 deals)</td><td class="num">$5,198,000</td></tr>
+<tr><td>Uncovered at 100% win</td><td class="num">$484,000</td>
+<td>Quarter elapsed</td><td class="num">day 32 of 91 · 35%</td></tr>
+</table>
+
+<h3>Q1 final (for context)</h3>
+<table>
+<tr><td>Won</td><td class="num">$6,041,000 · 51 deals · 102% of quota</td>
+<td>Lost</td><td class="num">$1,711,000 · 12 deals</td></tr>
+<tr><td>Value win rate</td><td class="num">77.9% → 1.28× break-even</td>
+<td>At its day 32</td><td class="num">$1,260,000 · 21.3%</td></tr>
+</table>
+
+<h3>Segments, Q2</h3>
+<table>
+<tr><th>Segment</th><th>Quota</th><th>Booked</th><th>Attain.</th>
+<th>Pipeline</th><th>Coverage</th><th>Note</th></tr>
+<tr><td>Enterprise</td><td class="num">$3,650,000</td>
+<td class="num">$165,000</td><td class="num">4.5%</td>
+<td class="num">$3,600,000</td><td class="num">1.03×</td>
+<td class="small">booked is 100% F4; strictly new $0</td></tr>
+<tr><td>Mid-Market</td><td class="num">$2,040,000</td>
+<td class="num">$353,000</td><td class="num">17.3%</td>
+<td class="num">$1,185,000</td><td class="num">0.70×</td>
+<td class="small">$208K of booked is F4</td></tr>
+<tr><td>SMB</td><td class="num">$510,000</td><td class="num">$0</td>
+<td class="num">0%</td><td class="num">$413,000</td><td class="num">0.81×</td>
+<td class="small">only segment with 0% recycled-ID pipeline</td></tr>
+</table>
+
+<h3>Reps, Q2 <span class="small">(booked · quota · coverage · verdict)</span></h3>
+<table>
+<tr><th>Rep</th><th>Booked</th><th>Quota</th><th>Coverage</th><th>Verdict</th></tr>
+<tr><td>Sarah Chen (Ent, West)</td><td class="num">$165,000</td>
+<td class="num">$950,000</td><td class="num">0.86×</td>
+<td>Watch <span class="small">— booked is 100% F4</span></td></tr>
+<tr><td>Marcus Rivera (Ent, Central)</td><td class="num">$0</td>
+<td class="num">$850,000</td><td class="num">1.32×</td><td>Watch</td></tr>
+<tr><td>Priya Patel (Ent, NE)</td><td class="num">$0</td>
+<td class="num">$1,000,000</td><td class="num">0.74×</td>
+<td>Insufficient data <span class="small">— 61% recycled</span></td></tr>
+<tr><td>James Okafor (Ent, SE)</td><td class="num">$0</td>
+<td class="num">$850,000</td><td class="num">1.25×</td><td>Watch</td></tr>
+<tr><td>Danielle Torres (MM, West)</td><td class="num">$0</td>
+<td class="num">$500,000</td><td class="num">0.65×</td>
+<td>Insufficient data <span class="small">— 54% recycled</span></td></tr>
+<tr><td>Kevin Marsh (MM, NE)</td><td class="num">$0</td>
+<td class="num">$540,000</td><td class="num">0.74×</td>
+<td><b>At risk</b></td></tr>
+<tr><td>Aisha Williams (MM, Central)</td><td class="num">$60,000</td>
+<td class="num">$480,000</td><td class="num">0.57×</td>
+<td>Insufficient data <span class="small">— 67% recycled</span></td></tr>
+<tr><td>Tom Bradley (MM, SE)</td><td class="num">$293,000</td>
+<td class="num">$520,000</td><td class="num">0.97×</td>
+<td>Watch <span class="small">— 56.3% attained; $208K of it F4</span></td></tr>
+<tr><td>Lisa Park (SMB, West)</td><td class="num">$0</td>
+<td class="num">$270,000</td><td class="num">0.71×</td>
+<td><b>At risk</b></td></tr>
+<tr><td>Ryan Cole (SMB, NE)</td><td class="num">$0</td>
+<td class="num">$240,000</td><td class="num">0.92×</td>
+<td><b>At risk</b></td></tr>
+</table>
+
+<h3>Findings</h3>
+<table>
+<tr><th></th><th>What</th><th>Scale</th></tr>
+<tr><td>F1</td><td>Recycled deal IDs (OPP-076…088)</td>
+<td class="num">13 deals · $1.97M · 38% of pipeline</td></tr>
+<tr><td>F2</td><td>Closed deals reopened/changed</td>
+<td class="num">7 deals · $576K</td></tr>
+<tr><td>F3</td><td>Open deals past forecast close</td>
+<td class="num">2 deals · $87K</td></tr>
+<tr><td>F4</td><td>Won in both quarters (dates moved) — OPP-042, 060, 074</td>
+<td class="num">3 deals · $373K · 72% of Q2 booked</td></tr>
+<tr><td>F5</td><td>Closed records edited after books closed (e.g. $155K→$120K)</td>
+<td class="num">3 deals · $260K</td></tr>
+</table>
+
+<h3>Q2 open pipeline by stage</h3>
+<table>
+<tr><th>Stage</th><th>Deals</th><th>Value</th></tr>
+<tr><td>Prospecting</td><td class="num">0</td><td class="num">$0 — <b>empty; nothing being seeded</b></td></tr>
+<tr><td>Discovery</td><td class="num">14</td><td class="num">$1,678,000</td></tr>
+<tr><td>Proposal</td><td class="num">19</td><td class="num">$1,977,000</td></tr>
+<tr><td>Negotiation</td><td class="num">13</td><td class="num">$1,543,000</td></tr>
+</table>
+
+<h3>Verification figures</h3>
+<p class="small">38 automated tests · 5 load-time reconciliations · router
+scored 22/24 on a golden set (21/24 rules-only) · narration validator:
+0 uncomputed numbers can render · adversarial audit caught F4 post-testing;
+detection now automated.</p>
+</div>
+
+<!-- ======================= APPENDIX C ======================= -->
+<div class="chapter">
+<h2>Appendix C · Suggested demo run-order</h2>
+<ol>
+<li><b>Resting screen</b> (1 min) — four KPI cards; land on "$484K
+uncovered."</li>
+<li><b>Enterprise vs quota</b> (3 min) — the red badge; the one-row
+numerator; strictly-new $0.</li>
+<li><b>Reps at risk</b> (3 min) — coverage chart with the 1.0×/1.28×
+lines; three unclassifiable reps.</li>
+<li><b>Q2 vs Q1 pace</b> (2 min) — day-32 alignment; $518K vs $1,260K;
+strictly-new tile.</li>
+<li><b>Type "Are we going to make the number this quarter?"</b> (2 min) —
+LLM routing tag + "N numbers verified" line.</li>
+<li><b>How is Priya Patel doing?</b> (2 min) — the refusal to judge a
+person on corrupted records.</li>
+<li><b>Data quality</b> (2 min) — the green-badged audit; "fix the data
+and the flags clear themselves."</li>
+<li><b>What will Q3 revenue be?</b> (1 min) — the honest refusal.
+Close on: eight trusted answers beat eight thousand plausible ones.</li>
+</ol>
+<p class="small">Recovery moves: Gemini down → sidebar toggle off, narrate the
+graceful degradation as a feature. App down → present from the one-page
+leave-behind (docs/leave-behind.pdf) without breaking stride.</p>
+
+<hr>
+<p class="small">Prepared by Sai Saran · Meridian Systems sales-intelligence
+scenario · Companion artifacts: live prototype (run.sh), one-page summary
+(docs/leave-behind.pdf), this guide.</p>
+</div>
+
+</body>
+</html>

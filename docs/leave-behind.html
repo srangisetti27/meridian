@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Meridian Pipeline Intelligence — One-Page Summary</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue',
+                   'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+  :root {
+    --ink: #1D1D1F; --sub: #6E6E73; --faint: #86868B; --line: #E5E5EA;
+    --accent: #0071E3; --green: #1E7E34; --green-bg: #E9F7EC;
+    --amber: #955300; --amber-bg: #FFF4E0; --red: #C2352B; --red-bg: #FDECEB;
+  }
+  body { background: #FFFFFF; color: var(--ink); padding: 34px 40px;
+         max-width: 1060px; margin: 0 auto; font-size: 12.5px; }
+  @media print {
+    body { padding: 10px 6px; zoom: .86; }
+    @page { margin: 10mm; }
+  }
+
+  h1 { font-size: 21px; font-weight: 700; letter-spacing: -.02em; }
+  .subtitle { color: var(--sub); font-size: 12.5px; margin: 3px 0 2px; }
+  .meta { color: var(--faint); font-size: 10.5px; font-weight: 500;
+          margin-bottom: 14px; }
+  .meta b { color: #3A3A3C; }
+
+  .sec { font-size: 9.5px; font-weight: 700; letter-spacing: .1em;
+         text-transform: uppercase; color: var(--faint); margin: 16px 0 7px; }
+
+  /* ---- architecture flow ---- */
+  .flow { display: flex; align-items: stretch; gap: 0; }
+  .node { flex: 1; border: 1px solid var(--line); border-radius: 10px;
+          padding: 8px 10px; background: #FBFBFD; }
+  .node b { display: block; font-size: 11px; margin-bottom: 2px; }
+  .node span { font-size: 9.8px; color: var(--sub); line-height: 1.35;
+               display: block; }
+  .node.llm { border-color: #BBD6F5; background: #F4F9FF; }
+  .node.det { border-color: #BFE3C6; background: #F2FBF4; }
+  .arrow { align-self: center; padding: 0 6px; color: #B9B9BE;
+           font-size: 14px; font-weight: 700; }
+  .flow-note { font-size: 9.8px; color: var(--sub); margin-top: 6px;
+               line-height: 1.5; }
+  .flow-note b { color: var(--green); }
+
+  /* ---- answers ---- */
+  .answers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .ans { border: 1px solid var(--line); border-radius: 12px; padding: 10px 13px; }
+  .ans .q { font-size: 10.8px; font-weight: 600; margin-bottom: 5px; }
+  .ans .q::before { content: 'Q · '; color: var(--accent); font-weight: 700; }
+  .big { font-size: 17px; font-weight: 700; letter-spacing: -.02em;
+         font-variant-numeric: tabular-nums; }
+  .big small { font-size: 11px; color: var(--sub); font-weight: 500; }
+  .ans p { font-size: 10.2px; color: var(--sub); line-height: 1.45;
+           margin-top: 4px; }
+  .pill { display: inline-flex; align-items: center; gap: 5px;
+          font-size: 9.3px; font-weight: 600; padding: 2px 9px;
+          border-radius: 999px; float: right; }
+  .pill i { width: 6px; height: 6px; border-radius: 50%; display: inline-block;
+            font-style: normal; }
+  .p-red { background: var(--red-bg); color: var(--red); }
+  .p-red i { background: #FF3B30; }
+  .p-amber { background: var(--amber-bg); color: var(--amber); }
+  .p-amber i { background: #FF9500; }
+  .p-green { background: var(--green-bg); color: var(--green); }
+  .p-green i { background: #34C759; }
+
+  /* ---- findings table ---- */
+  table { width: 100%; border-collapse: collapse; font-size: 10.6px; }
+  th { text-align: left; font-size: 9.3px; font-weight: 700;
+       letter-spacing: .06em; text-transform: uppercase; color: var(--faint);
+       padding: 4px 10px 4px 0; border-bottom: 1px solid var(--line); }
+  td { padding: 5px 10px 5px 0; border-bottom: 1px solid #F0F0F2;
+       vertical-align: top; line-height: 1.4; color: #3A3A3C; }
+  td.code { font-weight: 700; color: var(--amber); white-space: nowrap; }
+  td.val { font-weight: 700; font-variant-numeric: tabular-nums;
+           white-space: nowrap; color: var(--ink); }
+  td.pol { color: var(--sub); font-size: 10px; }
+
+  /* ---- two-column bottom ---- */
+  .cols { display: grid; grid-template-columns: 1.2fr 1fr; gap: 22px; }
+  ul { list-style: none; }
+  li { font-size: 10.4px; color: #3A3A3C; line-height: 1.5;
+       padding: 2.5px 0 2.5px 12px; border-left: 2px solid var(--line);
+       margin-bottom: 3px; }
+  li b { color: var(--ink); }
+
+  .verify { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+  .vchip { border: 1px solid var(--line); border-radius: 999px;
+           font-size: 9.8px; font-weight: 600; color: #3A3A3C;
+           padding: 4px 11px; background: #FBFBFD; }
+  .vchip b { color: var(--green); }
+
+  footer { margin-top: 16px; padding-top: 8px; border-top: 1px solid var(--line);
+           font-size: 9.5px; color: var(--faint); display: flex;
+           justify-content: space-between; }
+</style>
+</head>
+<body>
+
+<h1>Meridian Pipeline Intelligence</h1>
+<div class="subtitle">A trust-first answer engine for pipeline questions —
+every answer carries its source records, its formula, and its assumptions.
+Numbers are computed, never generated.</div>
+<div class="meta"><b>Q1 2026</b> final &nbsp;·&nbsp; <b>Q2 2026</b> in progress,
+day 32 of 91 (as of May 2, 2026) &nbsp;·&nbsp; 8 audited analyses &nbsp;·&nbsp;
+Streamlit + pandas, LLM-optional (Claude / Gemini interchangeable)</div>
+
+<div class="sec">Trust architecture — the model chooses from a menu; it never cooks</div>
+<div class="flow">
+  <div class="node"><b>Plain-English question</b>
+    <span>"How is Enterprise tracking against quota?"</span></div>
+  <div class="arrow">→</div>
+  <div class="node llm"><b>Constrained router</b>
+    <span>Keyword rules; LLM fallback may only <i>select</i> from the
+    8-intent catalog. Out-of-scope → refusal, never a guess.</span></div>
+  <div class="arrow">→</div>
+  <div class="node det"><b>Deterministic engine</b>
+    <span>Pure pandas over validated CSVs. LLM-free zone. Fail-closed
+    validation; 5 reconciliations at load.</span></div>
+  <div class="arrow">→</div>
+  <div class="node llm"><b>Validated narration</b>
+    <span>LLM rephrases the computed packet; a numeric validator vetoes any
+    number the engine did not produce.</span></div>
+  <div class="arrow">→</div>
+  <div class="node"><b>Answer + receipts</b>
+    <span>Direct answer · source rows · formula · warnings · trust badge
+    (Verified / With assumptions / Insufficient data).</span></div>
+</div>
+<div class="flow-note">Worst case is a <b>visible</b> misroute the user can
+correct — never an invisible wrong number. Six intents shipped day one;
+capability grows intent-by-intent, each audited before it answers a leader.</div>
+
+<div class="sec">The three required answers — as computed</div>
+<div class="answers">
+  <div class="ans">
+    <span class="pill p-red"><i></i>Insufficient data</span>
+    <div class="q">Enterprise vs Q2 quota</div>
+    <div class="big">4.5% <small>· $165,000 of $3,650,000</small></div>
+    <p>Coverage 1.03x vs 1.28x break-even (derived from Q1's realized 77.9%
+    win rate). Flagged: the entire numerator is re-dated Q1 revenue —
+    strictly-new Enterprise bookings are <b>$0</b>.</p>
+  </div>
+  <div class="ans">
+    <span class="pill p-amber"><i></i>Verified w/ assumptions</span>
+    <div class="q">Reps at risk of missing Q2</div>
+    <div class="big">3 at risk <small>· 4 watch · 3 unclassifiable</small></div>
+    <p>Marsh, Park, Cole: behind pace <i>and</i> pipeline &lt; remaining quota.
+    Patel, Torres, Williams: 54–67% of pipeline on reused deal IDs — reported
+    as a data problem, not a performance problem.</p>
+  </div>
+  <div class="ans">
+    <span class="pill p-amber"><i></i>Verified w/ assumptions</span>
+    <div class="q">Q2 vs Q1, same point (day 32)</div>
+    <div class="big">8.4% <small>vs 21.3% — $518K vs $1,260K</small></div>
+    <p>Q2 runs at ~41% of Q1's dollar pace; strictly-new basis is $145,000 —
+    the gap only widens. Context: Q1 was also back-loaded and finished at
+    102% ($6,041,000).</p>
+  </div>
+</div>
+
+<div class="sec">Data-integrity findings — detected at load, never hardcoded</div>
+<table>
+  <tr><th></th><th>Finding</th><th>Scale</th><th>Policy</th></tr>
+  <tr><td class="code">F1</td>
+      <td>Deal IDs reused for different companies across snapshots
+          (OPP-076…088)</td>
+      <td class="val">13 deals · $1.97M<br><span style="font-weight:400;color:#86868B">38% of open pipeline</span></td>
+      <td class="pol">Included as current system of record; excluded from all
+          deal-history comparisons; flagged on every touched answer</td></tr>
+  <tr><td class="code">F2</td>
+      <td>Deals closed in the final Q1 book reopened or re-lost in Q2</td>
+      <td class="val">7 deals · $576K</td>
+      <td class="pol">Q1 reporting follows the closed book; Q1-revenue/Q2-pipeline
+          overlap disclosed</td></tr>
+  <tr><td class="code">F3</td>
+      <td>Open deals past their expected close date</td>
+      <td class="val">2 deals · $87K</td>
+      <td class="pol">Kept in pipeline; hygiene flag</td></tr>
+  <tr><td class="code">F4</td>
+      <td><b>Closed-Won in both snapshots, close date moved Q1&nbsp;→&nbsp;Q2 —
+          same revenue counted in both quarters</b> (OPP-042, 060, 074)</td>
+      <td class="val">3 deals · $373K<br><span style="font-weight:400;color:#86868B">72% of "Q2 booked"</span></td>
+      <td class="pol">Both figures shown everywhere; answers dominated by it
+          downgrade their own trust badge to red</td></tr>
+  <tr><td class="code">F5</td>
+      <td>Closed records edited after the Q1 book closed (e.g. value cut
+          $155K → $120K)</td>
+      <td class="val">3 deals · $260K</td>
+      <td class="pol">Q1 follows the Q1 file; edits surfaced, not silently
+          adopted</td></tr>
+</table>
+
+<div class="cols">
+  <div>
+    <div class="sec">Key definitions &amp; assumptions</div>
+    <ul>
+      <li><b>Attainment</b> = Closed-Won ÷ quota. Open pipeline reported
+          separately, never blended.</li>
+      <li><b>Coverage</b> = open pipeline ÷ remaining quota; 1.28x break-even
+          derived from Q1's realized value win-rate, not an industry
+          heuristic.</li>
+      <li><b>Same point</b> = equal days elapsed (day 32: May 2 ↔ Feb 1);
+          residual calendar effects favor Q2, so the gap is real.</li>
+      <li><b>Risk</b> = fixed published thresholds on pace, coverage, and
+          record reliability — not a predictive model. Weighted forecasting
+          deliberately excluded: no stage-outcome history exists to calibrate
+          probabilities honestly.</li>
+      <li><b>As-of date</b> (May 2, 2026) from the brief — the files carry no
+          snapshot timestamp.</li>
+    </ul>
+  </div>
+  <div>
+    <div class="sec">Verification</div>
+    <div class="verify">
+      <span class="vchip"><b>38</b> automated tests, golden numbers hand-checked</span>
+      <span class="vchip"><b>5</b> reconciliations at every load, fail-closed</span>
+      <span class="vchip">Routing eval <b>22/24</b> on golden set (rules + LLM)</span>
+      <span class="vchip">Narration validator: <b>0</b> uncomputed numbers can render</span>
+      <span class="vchip">Adversarial audit found F4 <b>after</b> tests passed — detection now automated</span>
+    </div>
+    <div class="sec">What it proves / doesn't</div>
+    <ul>
+      <li><b>Proves</b>: trustworthy plain-English answers over governed
+          metrics are buildable in take-home scope, with hallucination
+          structurally impossible in the numeric path.</li>
+      <li><b>Doesn't</b>: production scale, live-CRM messiness, open-ended NL.
+          Next: read-only Salesforce/Snowflake with snapshot journaling —
+          making F4-style re-dating impossible to hide, not just detectable.</li>
+    </ul>
+  </div>
+</div>
+
+<footer>
+  <span>Prepared by Sai Saran · FDE take-home, Meridian Systems scenario ·
+        Interview 2</span>
+  <span>Prototype: Streamlit · pandas · LLM-optional with graceful
+        degradation</span>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Mock Interview — Practice Script for Interview 2</title>
+<style>
+  * { box-sizing:border-box; margin:0; padding:0;
+      font-family:-apple-system, BlinkMacSystemFont, 'Helvetica Neue',
+                  'Inter', sans-serif; -webkit-font-smoothing:antialiased; }
+  :root { --ink:#1D1D1F; --sub:#6E6E73; --faint:#86868B; --line:#E5E5EA;
+          --accent:#7C3AED; --green:#1E7E34; --amber:#955300; --red:#C2352B; }
+  body { background:#fff; color:var(--ink); max-width:800px; margin:0 auto;
+         padding:40px 30px; font-size:13.5px; line-height:1.62; }
+  @media print { body{padding:0;} @page{margin:15mm 14mm;}
+                 .chapter{page-break-before:always;} .cover{page-break-before:avoid;} }
+
+  h1 { font-size:25px; font-weight:700; letter-spacing:-.02em; margin-bottom:6px;}
+  h2 { font-size:18px; font-weight:700; letter-spacing:-.015em; margin:22px 0 4px;}
+  h3 { font-size:14px; font-weight:650; margin:14px 0 6px; }
+  p  { margin:8px 0; color:#2B2B2E; }
+  .lead { color:var(--sub); font-size:14.5px; }
+  ul, ol { margin:8px 0 8px 22px; }
+  li { margin:4px 0; color:#2B2B2E; }
+  b { color:var(--ink); }
+  .kicker { font-size:10.5px; font-weight:700; letter-spacing:.12em;
+            text-transform:uppercase; color:var(--accent); margin-bottom:8px;}
+  .cover-meta { color:var(--faint); font-size:12px; margin:10px 0 20px; }
+
+  .q { border:1px solid var(--line); border-radius:14px; padding:12px 16px;
+       margin:14px 0 4px; background:#FBFBFD; }
+  .q .who { font-size:9.5px; font-weight:700; letter-spacing:.1em;
+       text-transform:uppercase; color:var(--accent); margin-bottom:4px; }
+  .q .text { font-size:13.8px; font-weight:600; color:#1D1D1F;
+       line-height:1.5; }
+  .ans { border-left:3px solid #34C759; background:#F4FBF5;
+       border-radius:0 10px 10px 0; padding:10px 14px; margin:8px 0;
+       font-size:12.8px; color:#1F3D26; }
+  .ans::before { content:'YOUR ANSWER — first person, ~45–75 seconds';
+       display:block; font-size:9.5px; font-weight:700; letter-spacing:.1em;
+       color:var(--green); margin-bottom:4px; }
+  .coach { font-size:11.8px; color:var(--sub); background:#F5F3FF;
+       border-radius:9px; padding:8px 12px; margin:6px 0 2px; }
+  .coach b { color:#5B21B6; }
+  .coach::before { content:'COACH · '; font-size:9.5px; font-weight:700;
+       letter-spacing:.1em; color:var(--accent); }
+
+  table { width:100%; border-collapse:collapse; font-size:12px; margin:10px 0;}
+  th { text-align:left; font-size:10px; font-weight:700; letter-spacing:.06em;
+       text-transform:uppercase; color:var(--faint); padding:5px 10px 5px 0;
+       border-bottom:1px solid var(--line); }
+  td { padding:6px 10px 6px 0; border-bottom:1px solid #F0F0F2; vertical-align:top; }
+  td.num { font-variant-numeric:tabular-nums; font-weight:600; white-space:nowrap;}
+  .small { font-size:11.5px; color:var(--sub); }
+  .check { font-size:12.3px; color:#2B2B2E; padding:3px 0 3px 4px; }
+  .check::before { content:'☐  '; color:var(--faint); }
+  .chapter { margin-top:10px; }
+  hr { border:none; border-top:1px solid var(--line); margin:16px 0; }
+</style>
+</head>
+<body>
+
+<!-- ============ COVER ============ -->
+<div class="cover">
+<div class="kicker">Mock interview · practice script · Interview 2</div>
+<h1>The Mock Interview</h1>
+<p class="lead">Twenty-two questions calibrated to your interviewer — a
+former natural-language-BI founder who now leads Deloitte's Palantir
+Foundry &amp; AIP practice — each with a speakable first-person answer and
+a coaching note. Practice until the answers are yours, not the page's.</p>
+<div class="cover-meta">Candidate: Sai Saran · Artifact: Meridian Pipeline
+Intelligence · Interviewer profile: AI &amp; Data Solutions AVP, NL-BI
+founder (datavoice), human-centered design facilitator, MSDS w/ data-ethics
+focus</div>
+
+<h3>How to use this (three passes)</h3>
+<ol>
+<li><b>Pass 1 — read silently</b>, whole document. Note which answers feel
+foreign.</li>
+<li><b>Pass 2 — answer aloud</b> reading only the QUESTION, then compare
+with the script. Don't memorize wording — memorize the <i>skeleton</i>
+(each answer is: claim → evidence from the artifact → honest limit).</li>
+<li><b>Pass 3 — blind rapid-fire</b>: cover everything, answer from the
+question list in Chapter 10, 30 seconds each.</li>
+</ol>
+<p class="small">Rule for every answer: one claim, one concrete number or
+demo moment as evidence, one honest limitation. Never bluff Palantir
+specifics — the fallback line is in Chapter 3, Q3.</p>
+</div>
+
+<!-- ============ CH 1 ============ -->
+<div class="chapter">
+<h2>1 · Round 0 — The opening (they always start here)</h2>
+
+<div class="q"><div class="who">Interviewer</div>
+<div class="text">"So — walk us through what you built."</div></div>
+<div class="ans">Meridian's problem wasn't missing data — it was that
+leaders stopped asking questions: answers were slow, and the one AI tool
+they tried invented numbers in front of the CCO. So I built a
+question-answering system with receipts. A leader asks in plain English;
+the question is routed to one of eight audited analyses; a deterministic
+engine computes the answer — no AI can touch a number — and the answer
+ships with its source rows, its formula, and a trust badge that downgrades
+itself when the data can't support it. Along the way the tool's own checks
+found five real problems in the sample data, including $373,000 of revenue
+counted in both quarters — which is why its very first answer grades
+itself red instead of pretending. Let me show you the client's own three
+test questions live. <i>[open the app]</i></div>
+<div class="coach">Keep this to 90 seconds and get to the demo — this
+interviewer builds products; he'd rather click than listen. The
+run-order: Enterprise (red badge) → Reps at risk → Q2 vs Q1 → type "Are we
+going to make the number this quarter?" (LLM tier) → "How is Ryan Ferrera
+doing?" (refusal — the smile beat) → "How is Ryan Cole doing?" (the real
+Ryan, answered) → Data quality (green).</div>
+
+<div class="q"><div class="who">Interviewer</div>
+<div class="text">"What did you cut, and what would you do with another
+four hours?"</div></div>
+<div class="ans">Every cut passed one test: does it trade verifiability
+for capability? Free-form ask-anything — cut, because an invented analysis
+can be invisibly wrong, which is the failure you already lived. Weighted
+forecasting — cut, because the data has no stage history, so any win
+probabilities would be invented numbers. A separate API and auth — real,
+but theater on sample data; they're week one of production. With four more
+hours: a "challenge this number" button that files a review ticket with
+full context, product-line analyses, and one-click PDF export of any
+answer with its evidence and flags.</div>
+<div class="coach">The four-hours answer should be <b>boringly concrete</b>
+— that's what makes it credible. Resist naming ten things.</div>
+</div>
+
+<!-- ============ CH 2 ============ -->
+<div class="chapter">
+<h2>2 · Round 1 — NL-to-BI depth <span class="small">(the datavoice
+founder's home turf — expect the sharpest follow-ups here)</span></h2>
+
+<div class="q"><div class="who">Interviewer</div>
+<div class="text">"Two VPs ask 'what's our attainment?' and expect two
+different numbers. What does your tool do?"</div></div>
+<div class="ans">It gives both of them the same number with the definition
+printed on the answer: Closed-Won revenue over quota, open pipeline never
+blended, dates and filters written out in the Calculation tab. That
+doesn't settle whose definition is right — that's a governance decision —
+but it ends the meeting where two leaders quote different numbers with
+the same word. And when sales ops disagrees with the definition, it's a
+one-line config change, versioned, and every historical answer in the
+audit log still shows which definition it used. In this dataset that
+scenario is real: "Q2 booked" is $518K by the system of record and $145K
+strictly-new — the tool shows both and tells you there's a decision to
+make.</div>
+<div class="coach">This is the <b>semantic-layer question</b> in disguise.
+The phrase "definition printed on the answer" is your anchor.</div>
+
+<div class="q"><div class="who">Interviewer</div>
+<div class="text">"How do you handle a genuinely ambiguous question?"</div></div>
+<div class="ans">Three behaviors, all visible. First, transparent keyword
+rules take the unambiguous cases. Second, the LLM tier classifies the
+conversational ones — but it can only choose off the menu, its choice is
+re-validated, and the interpretation is printed at the top of the answer:
+"interpreted as company pipeline summary." Third, if nothing fits, it
+refuses and lists what it can answer. And I don't assume routing works — I
+measure it: 22 of 24 on a golden phrasing set, and the important property
+is that every miss fails to a visible refusal or a labeled interpretation,
+never to a wrong number.</div>
+<div class="coach">If he pushes "but the interpretation could still be
+wrong" — agree instantly: <b>"yes — visibly wrong, which the user corrects
+in one click. I traded invisible errors for visible ones."</b></div>
+
+<div class="q"><div class="who">Interviewer</div>
+<div class="text">"Tools like this demo beautifully and are abandoned by
+month two. Why is yours different?"</div></div>
+<div class="ans">Because the thing that kills them is the first wrong
+answer — one hallucination and the leader never comes back. This tool is
+built so its first wrong answer is a refusal or a red badge, not a lie.
+Beyond that, adoption is designed in: every refusal is logged and becomes
+the backlog for the next audited analysis, so the tool grows toward what
+leaders actually ask; and the pilot's success metric is behavioral — are
+leaders asking questions again — because that was the original disease.
+I'd also say honestly: eight intents is a narrow start. Narrow and trusted
+is survivable; broad and wrong is not.</div>
+<div class="coach">He lived this with datavoice. If it feels natural,
+this is the moment for: <b>"you built datavoice — I'd genuinely love to
+hear what killed adoption there, and whether this approach fixes it or
+repeats it."</b> Once, humbly.</div>
+
+<div class="q"><div class="who">Interviewer</div>
+<div class="text">"Why a chat interface at all? Why not just better
+dashboards?"</div></div>
+<div class="ans">Because the client's own words were "leaders stop
+asking." A dashboard answers the questions someone predicted last
+quarter; the CCO's next question is never on it, so it routes to an
+analyst and dies in a queue. Chat removes the translation layer — but
+naked chat is the thing that burned them. So the design is: the front
+door of a bot, the engine room of a dashboard, plus self-awareness
+neither has — badges, refusals, receipts. And the channel is swappable:
+everything renders from one answer contract, so the same engine could
+sit in Slack, a portal, or voice.</div>
+<div class="coach">"Front door of a bot, engine room of a dashboard" is
+your most quotable line. Land it once, don't reuse it.</div>
+</div>
+
+<!-- ============ CH 3 ============ -->
+<div class="chapter">
+<h2>3 · Round 2 — Trust, governance, and the Palantir lens</h2>
+
+<div class="q"><div class="who">Interviewer</div>
+<div class="text">"Where exactly can the model lie to me in your
+system?"</div></div>
+<div class="ans">In numbers — nowhere. There's no code path from model
+output into arithmetic: the engine imports no LLM library, and the
+model's two jobs are choosing from the intent menu and phrasing computed
+results, where a validator extracts every number from its prose and
+vetoes the whole sentence if even one isn't in the computed packet —
+including sneaky ones, like abbreviating $3,650,000 to "$3.65M." Where it
+can still mislead is wording: a correct-numbers sentence with wrong
+emphasis. I mitigate that by always keeping the deterministic wording one
+tab away and showing the verification count on screen — but I won't claim
+that risk is zero.</div>
+<div class="coach">The unprompted honest limit at the end is what
+separates an 8 from a 10 on this question.</div>
+
+<div class="q"><div class="who">Interviewer</div>
+<div class="text">"You've essentially built a tiny semantic layer with
+governed functions. Did you realize you rebuilt the Foundry/AIP
+pattern?"</div></div>
+<div class="ans">Deliberately so — at take-home scale. Eight audited
+functions over a governed metric layer, an LLM allowed only to select
+among them and phrase their outputs, validation on both sides, and an
+audit log underneath. That's the AIP philosophy: the model gets leverage
+through governed actions, never through raw access. I haven't shipped on
+Foundry itself — I want to be straight about that — but I built this
+architecture because I believe it's the only NL-analytics pattern that
+survives contact with a skeptical enterprise, and it's why the Palantir
+side of your practice genuinely interests me.</div>
+<div class="coach"><b>The most important answer in this document.</b> Say
+"I haven't shipped on Foundry" before he asks — he leads the practice and
+will smell any stretch. The last clause turns it into motivation.</div>
+
+<div class="q"><div class="who">Interviewer</div>
+<div class="text">"Your trust badges — who decided the rules, and can I
+audit them?"</div></div>
+<div class="ans">Fixed rules, all in one config file an auditor can read
+in a minute: for example, if more than half of a booked figure is
+re-dated revenue, the answer downgrades itself to red; if more than half
+a rep's pipeline sits on reused IDs, the tool refuses to classify the
+person at all. The thresholds that could be arbitrary aren't — the 1.28×
+coverage break-even is derived from Q1's actual 77.9% win rate, their
+own data. And the same rules apply symmetrically: my best performer, Tom
+Bradley at 56% attainment, still carries a red badge because 71% of his
+booked is re-dated. The star gets the same scrutiny as the
+struggler.</div>
+<div class="coach">The Bradley symmetry is your proof the rules aren't
+vibes. Have his numbers cold: $293K booked, $208K re-dated, $85K strictly
+new.</div>
+</div>
+
+<!-- ============ CH 4 ============ -->
+<div class="chapter">
+<h2>4 · Round 3 — Human-centered design</h2>
+
+<div class="q"><div class="who">Interviewer</div>
+<div class="text">"Who is the user — and what did you deliberately NOT
+build for them?"</div></div>
+<div class="ans">The user is a sales leader with thirty seconds, not an
+analyst with an afternoon — that drove everything. For them I did NOT
+build: query builders, filter panels, or free-form asking; the KPI band
+answers the pre-question glance, five chips cover the questions they
+actually ask, and there's an assistant-only mode that hides everything
+except the conversation. The analyst isn't ignored — they're served by
+the receipts: every answer carries its rows and formula, so the analyst's
+verification job takes thirty seconds instead of an afternoon too. Two
+users, one artifact, different layers.</div>
+<div class="coach">He trains people on user-centered design — "two users,
+one artifact, different layers" is his language.</div>
+
+<div class="q"><div class="who">Interviewer</div>
+<div class="text">"If Meridian were a real client, how would you have run
+discovery?"</div></div>
+<div class="ans">A visioning session with the CCO's leadership team — but
+anchored in artifacts, not opinions: bring the last ten questions each
+leader actually sent to an analyst, and the last report they didn't
+trust and why. Those ten questions become the initial intent menu — not
+my guess at eight. Then a data-forensics pass before any build, because
+in this exercise the forensics changed everything: five findings,
+including revenue counted in two quarters. And once live, discovery never
+stops — every refusal the tool logs is a leader telling you what to
+build next.</div>
+<div class="coach">"Discovery never stops — the refusal log is the
+backlog" is the senior move here.</div>
+
+<div class="q"><div class="who">Interviewer</div>
+<div class="text">"Tell me about a design decision you reversed."</div></div>
+<div class="ans">The landing page. My first version restated the whole
+engagement brief — cards, stats, the story. It was thorough and it was
+wrong: overloaded, text-heavy, built for me rather than the user. I
+rebuilt it as an assistant-home — a greeting, one input, four example
+questions — and moved the brief into a collapsed "about" section. The
+general lesson I took: my instinct under pressure is to prove work by
+showing volume; the discipline is to prove it by showing restraint. The
+same reversal happened with the sidebar — five paragraphs of data
+findings became five one-line rows with details on demand.</div>
+<div class="coach">Reversals answered honestly build more trust than
+pretending the first draft was right. Keep it light.</div>
+</div>
+
+<!-- ============ CH 5 ============ -->
+<div class="chapter">
+<h2>5 · Round 4 — Scale &amp; production</h2>
+
+<div class="q"><div class="who">Interviewer</div>
+<div class="text">"Two million rows in Snowflake, nulls everywhere,
+fields sales ops repurposed years ago. What survives from your
+prototype?"</div></div>
+<div class="ans">The contract survives; the implementation swaps. Every
+answer is already a structured packet — answer, evidence, calculation,
+flags — so the eight analyses become governed, versioned warehouse
+queries; pandas doesn't come along. The validation posture survives and
+moves upstream: my five load-time reconciliations become pipeline gates
+that block bad data before it's queryable. And the single most important
+production upgrade is snapshot journaling — recording every change to
+every deal — because it converts my biggest finding from
+detectable-by-audit to impossible-to-hide: closed-won dates moving
+across a quarter boundary becomes a standing alert, not a forensic
+discovery. What honestly doesn't survive: I haven't proven performance at
+that scale, and real CRM mess will surface defect classes I haven't
+conceived — that's why the posture is detect, disclose, downgrade, rather
+than a fixed list of checks.</div>
+<div class="coach">He architects this for a living. The phrase
+"detectable → impossible to hide" is the one to land.</div>
+
+<div class="q"><div class="who">Interviewer</div>
+<div class="text">"We deploy into government environments. What breaks in
+yours?"</div></div>
+<div class="ans">Less than you'd expect, by accident of the trust design.
+The LLM is optional — the app degrades to fully deterministic operation
+with no external calls, which is air-gap-friendly. The container builds
+with the test suite as a gate, everything is auditable down to a
+query-by-query log, and there's no data leaving the boundary except the
+optional narration call — which is the first thing I'd swap for an
+in-boundary model. What's genuinely missing for gov: access control,
+classification handling, and accreditation paperwork — real work, but
+additive to this architecture rather than fighting it.</div>
+<div class="coach">Don't oversell clearance-world knowledge; the honest
+"missing" list is the credibility.</div>
+</div>
+
+<!-- ============ CH 6 ============ -->
+<div class="chapter">
+<h2>6 · Round 5 — Business &amp; strategy</h2>
+
+<div class="q"><div class="who">Interviewer</div>
+<div class="text">"Forget the tool. You're in front of Meridian's CCO
+Monday morning — what do you tell her to do?"</div></div>
+<div class="ans">Three things, in order. First, create pipeline this
+week: even winning every open deal leaves $484,000 of quota uncovered,
+and the Prospecting stage is empty — nothing new is being seeded, so next
+quarter's problem is being created right now. Second, run a CRM hygiene
+sprint before the next QBR: twenty-eight records carry defects, three of
+her reps can't even be evaluated because of them, and $373,000 of revenue
+currently lives in two quarters at once — that last one needs finance in
+the room, not just sales ops. Third, until journaling makes re-dating
+impossible, run the quarter on two numbers side by side: booked $518K,
+strictly-new $145K. They're different enough to change decisions.</div>
+<div class="coach">Numbers from memory, no hedging — this answer IS the
+FDE job. If you nail one answer tomorrow, make it this one.</div>
+
+<div class="q"><div class="who">Interviewer</div>
+<div class="text">"How does this prototype become an engagement?"</div></div>
+<div class="ans">The wedge is the data findings — they're already worth
+the engagement fee, and they create urgency the demo alone wouldn't.
+Phase one: three-leader pilot on read-only replicated CRM data, six
+weeks, two commitments — every refused question becomes intent backlog,
+every challenged number gets an answer within a day. Success metric is
+behavioral: are leaders asking questions again. Phase two grows the
+intent library from observed demand and moves the checks into the
+pipeline. I'd keep one governance rule non-negotiable: no free-form query
+path without a separate risk sign-off — the constrained surface is why
+it's trustworthy, and it's always the first thing someone asks to
+remove.</div>
+<div class="coach">"The findings are the wedge" is strategy-speak he'll
+recognize. The non-negotiable at the end shows spine.</div>
+</div>
+
+<!-- ============ CH 7 ============ -->
+<div class="chapter">
+<h2>7 · Round 6 — Ethics &amp; behavioral <span class="small">(his MSDS
+focus area was data ethics — expect at least one)</span></h2>
+
+<div class="q"><div class="who">Interviewer</div>
+<div class="text">"Your tool labels human beings 'at risk.' Talk to me
+about that."</div></div>
+<div class="ans">It's the most ethically loaded feature in the product,
+and it shaped three decisions. The rules are published, not predictive —
+pace, coverage, record reliability — so a rep can see exactly why they're
+flagged and what changes it. The tool refuses to grade anyone whose
+records are majority-corrupted — three of the ten reps today — because
+"bad data" must never silently become "bad performance"; that's a
+career-affecting distinction. And symmetrically, the top performer's
+inflated numbers get flagged too. For production I'd add governance
+before rollout: HR and sales ops decide who sees rep-level labels,
+because a risk flag that leaks into comp conversations without context is
+harm, not insight.</div>
+<div class="coach">This is the answer where you can visibly care. Slow
+down for "bad data must never silently become bad performance."</div>
+
+<div class="q"><div class="who">Interviewer</div>
+<div class="text">"Tell me about a time you were wrong during this
+project."</div></div>
+<div class="ans">The best one: my first working version passed every test
+I'd written — and was still materially wrong. It reported Q2 revenue at
+$518K without knowing that 72% of it was Q1 revenue with quietly moved
+close dates. My tests were green because I'd only tested for defects I'd
+imagined. I found it by adversarially auditing my own outputs against the
+raw files — trying to refute my own numbers — and then automated the
+detection so it's now a standing check with its own tests. It permanently
+changed my claim about the tool: not "it can't be wrong," but "being
+wrong is detectable, attributable, and cheap to fix."</div>
+<div class="coach">Tell it as a story with a turn, not a confession. This
+is your strongest three minutes — don't rush it.</div>
+
+<div class="q"><div class="who">Interviewer</div>
+<div class="text">"How much of this did AI build, honestly?"</div></div>
+<div class="ans">A lot of the code — I used an AI coding assistant as a
+pair-programmer throughout, which your brief explicitly encourages. What
+I owned: the read of the client problem as trust rather than features,
+the architecture decision to keep the model out of the numeric path,
+every metric definition and threshold, the adversarial audit that caught
+the double-counted revenue after tests passed, and the verification
+standard — 42 tests, five reconciliations, a measured router. I can
+defend any line of it, and I'd point out the recursion: I used AI with
+guardrails to build a tool whose entire thesis is AI with guardrails. How
+I used it is, I think, the demonstration the brief was asking for.</div>
+<div class="coach">Zero defensiveness. Confidence here comes from the
+fact that you <i>can</i> defend any line — which is why Pass 3 practice
+matters.</div>
+</div>
+
+<!-- ============ CH 8 ============ -->
+<div class="chapter">
+<h2>8 · Round 7 — The required question from the brief</h2>
+
+<div class="q"><div class="who">Interviewer (verbatim from the brief)</div>
+<div class="text">"The last AI tool this client used lost executive trust
+because it hallucinated. How does your approach avoid that problem — and
+where does it still fall short?"</div></div>
+<div class="ans">It avoids it structurally, not behaviorally. The old
+tool's model both understood questions and produced numbers, so every
+answer was a potential fabrication. I separated the jobs permanently: the
+model only chooses from eight audited analyses and phrases their
+computed results — and a validator vetoes any sentence containing a
+number the engine didn't produce. There is no code path for a hallucinated
+figure to reach the screen; it can ignore every instruction and still
+can't lie in numbers. Where it still falls short, honestly: wording can
+mislead even when numbers are right; routing can pick a wrong menu item —
+visibly, but wrongly; the thresholds are calibrated on one quarter; and
+the deepest limit — deterministic checks only catch defects a human
+conceived. I know that last one is real because it happened to me: my
+audit found $373K of double-counted revenue after every test was green.
+That's why my claim isn't "never wrong" — it's "wrong is visible,
+traceable, and cheap to fix," which I'd argue is the only trust claim an
+honest engineer can make.</div>
+<div class="coach">This is the one answer worth knowing nearly verbatim —
+the brief literally announces it's coming. 90 seconds, unhurried.</div>
+</div>
+
+<!-- ============ CH 9 ============ -->
+<div class="chapter">
+<h2>9 · Curveballs — short answers, 20 seconds each</h2>
+
+<table>
+<tr><th>Curveball</th><th>Your 20-second answer</th></tr>
+<tr><td>"Ask it something ridiculous right now."</td>
+<td>Hand over the keyboard. Refusal path is safe. "That refusal is the
+feature — the last tool improvised."</td></tr>
+<tr><td>"Why Streamlit and not a real front end?"</td>
+<td>Prototype speed with a disposable UI; all logic lives in the engine,
+which is already API-shaped. The UI is the cheapest thing to replace.</td></tr>
+<tr><td>"Why no RAG? Everyone does RAG."</td>
+<td>RAG grounds answers in documents; this data is tables, where
+retrieval should be an exact filter, not a similarity guess. The day they
+bring contracts, RAG becomes audited intent number nine.</td></tr>
+<tr><td>"Is 8.4% attainment bad?"</td>
+<td>Against 35% elapsed it looks bad; against Q1's 21%-at-day-32 →
+102%-finish pattern it's early. The bad number is coverage below 1.28× —
+that one doesn't fix itself.</td></tr>
+<tr><td>"Which number is real — $518K or $145K?"</td>
+<td>Both computed correctly from different premises; choosing is a
+finance-policy decision. My job was making sure they know there's a
+decision.</td></tr>
+<tr><td>"What if Gemini goes down mid-demo?"</td>
+<td>Flip the toggle — everything still works. Happened to me live during
+a provider billing outage; users saw plainer wording, zero errors.</td></tr>
+<tr><td>"How long did this really take?"</td>
+<td>The deterministic core fits the 1–2h scope; I chose to extend it —
+LLM layer, audit, deployment, docs — to show the production direction,
+and I can point at which parts belong to which phase.</td></tr>
+<tr><td>"What's your biggest technical debt?"</td>
+<td>Keyword routing brittleness and single-quarter threshold calibration.
+Both have written fixes in the roadmap.</td></tr>
+</table>
+</div>
+
+<!-- ============ CH 10 ============ -->
+<div class="chapter">
+<h2>10 · Blind rapid-fire list (Pass 3 — cover everything above)</h2>
+<ol>
+<li>Walk me through what you built.</li>
+<li>What did you cut and why?</li>
+<li>Two VPs expect different "attainment" numbers — what happens?</li>
+<li>How do you handle ambiguity?</li>
+<li>Why won't this be abandoned like every other chat-BI tool?</li>
+<li>Why chat instead of dashboards?</li>
+<li>Where can the model lie to you?</li>
+<li>You rebuilt the AIP pattern — did you know?</li>
+<li>Who audits your trust badges?</li>
+<li>Who's the user and what didn't you build?</li>
+<li>How would you run discovery?</li>
+<li>A design decision you reversed?</li>
+<li>What survives at 2M rows?</li>
+<li>What breaks in a government environment?</li>
+<li>What should the CCO do Monday?</li>
+<li>How does this become an engagement?</li>
+<li>Your tool labels people "at risk" — defend that.</li>
+<li>A time you were wrong in this project?</li>
+<li>How much did AI build?</li>
+<li>The hallucination question (brief, verbatim).</li>
+<li>Which is real: $518K or $145K?</li>
+<li>Why no RAG?</li>
+</ol>
+
+<h3>Your questions for him (pick two)</h3>
+<ul>
+<li>"In your AIP work, where do you draw the line between governed
+functions and letting the model compose freely — and has that line moved
+this year?"</li>
+<li>"When you built datavoice, what actually killed adoption — and does
+my constrained-menu approach fix it or repeat it?"</li>
+<li>"What does the best FDE you've worked with do in week one at a
+client?"</li>
+</ul>
+</div>
+
+<!-- ============ CH 11 ============ -->
+<div class="chapter">
+<h2>11 · Self-scoring &amp; final checks</h2>
+
+<h3>After each practice pass, score yourself 1–5</h3>
+<table>
+<tr><th>Dimension</th><th>You're a 5 when…</th></tr>
+<tr><td>Numbers fluency</td><td>$518K/$145K/$373K/$484K/1.28×/77.9%/22-of-24
+come out without pausing</td></tr>
+<tr><td>Honest limits</td><td>Every answer volunteers a limitation before
+being asked</td></tr>
+<tr><td>Story beats</td><td>F4 story and Bradley symmetry told as
+60-second narratives with a turn</td></tr>
+<tr><td>Palantir humility</td><td>"I haven't shipped on Foundry" said
+plainly, followed by the pattern argument</td></tr>
+<tr><td>Brevity</td><td>No answer over 90 seconds unless invited
+deeper</td></tr>
+</table>
+
+<h3>Night-before checklist</h3>
+<div class="check">Run the app once end-to-end (<b>./run.sh</b>), ask all
+five chips + the Ryan pair</div>
+<div class="check">Close every unrelated browser tab; share window, not
+desktop</div>
+<div class="check">PDFs open in tabs: architecture · leave-behind ·
+guardrails</div>
+<div class="check">Rehearse Round 8 (hallucination answer) aloud twice</div>
+<div class="check">Rehearse the CCO-Monday answer aloud twice</div>
+<div class="check">Sleep. A rested 80% beats an exhausted 100%.</div>
+
+<hr>
+<p class="small">Mock Interview practice script · Meridian Pipeline
+Intelligence · Sai Saran · Interview 2</p>
+</div>
+
+</body>
+</html>

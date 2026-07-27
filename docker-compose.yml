@@ -1,0 +1,17 @@
+services:
+  meridian:
+    build: .
+    container_name: meridian-pipeline-intelligence
+    ports:
+      - "8501:8501"
+    environment:
+      # LLM keys are optional — without them the app runs fully
+      # deterministic (keyword routing, engine-written answers).
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - MERIDIAN_LLM_PROVIDER=${MERIDIAN_LLM_PROVIDER:-}
+      - MERIDIAN_LLM_MODEL=${MERIDIAN_LLM_MODEL:-}
+    volumes:
+      # Persist the query audit log on the host across container restarts
+      - ./logs:/app/logs
+    restart: unless-stopped

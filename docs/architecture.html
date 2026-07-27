@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Meridian Pipeline Intelligence — Architecture</title>
+<style>
+  * { box-sizing:border-box; margin:0; padding:0;
+      font-family:-apple-system, BlinkMacSystemFont, 'Helvetica Neue',
+                  'Inter', sans-serif; -webkit-font-smoothing:antialiased; }
+  :root { --ink:#1D1D1F; --sub:#6E6E73; --faint:#86868B; --line:#E5E5EA;
+          --accent:#0071E3; --green:#1E7E34; --red:#C2352B; }
+  body { background:#fff; color:var(--ink); width:1560px; margin:0 auto;
+         padding:34px 40px 24px; }
+  @media print { @page { size: A4 landscape; margin:8mm; }
+                 body { zoom:.52; padding:10px 16px; } }
+
+  h1 { font-size:22px; font-weight:700; letter-spacing:-.02em; }
+  .lead { color:var(--sub); font-size:12.5px; margin:3px 0 14px; }
+  .lead b { color:var(--ink); }
+
+  .grid { display:flex; gap:18px; align-items:stretch; }
+  .col-main { flex:1; }
+
+  .lane { border:1px dashed #D8D8DC; border-radius:16px; padding:12px 16px
+          14px; margin-bottom:12px; position:relative; }
+  .lane-tag { position:absolute; top:-8px; left:16px; background:#fff;
+          padding:0 8px; font-size:9.5px; font-weight:700;
+          letter-spacing:.1em; text-transform:uppercase; color:var(--faint); }
+
+  .row { display:flex; align-items:stretch; gap:0; }
+  .box { flex:1; border:1px solid var(--line); border-radius:12px;
+         background:#FBFBFD; padding:10px 13px; position:relative; }
+  .box b { display:block; font-size:12.5px; margin-bottom:3px; }
+  .box span { font-size:10.5px; color:var(--sub); line-height:1.45;
+              display:block; }
+  .box code { font-family:'SF Mono', ui-monospace, Menlo, monospace;
+              font-size:9px; color:var(--faint); }
+  .box.llm  { border-color:#BBD6F5; background:#F4F9FF; }
+  .box.det  { border-color:#BFE3C6; background:#F2FBF4; }
+  .box.data { border-color:#E0D6C8; background:#FBF8F2; }
+  .box.stop { border-color:#F2C4C4; background:#FDF3F2; }
+  .arrow { align-self:center; padding:0 7px; color:#B9B9BE; font-size:16px;
+           font-weight:700; flex:none; }
+  .varrow { text-align:center; color:#B9B9BE; font-size:15px; font-weight:700;
+            line-height:1; padding:5px 0; }
+
+  .gpin { position:absolute; top:-9px; right:10px; display:flex; gap:4px; }
+  .gpin i { font-style:normal; background:var(--accent); color:#fff;
+            font-size:8.5px; font-weight:800; border-radius:6px;
+            padding:2px 6px; letter-spacing:.02em; }
+
+  .side { width:270px; display:flex; flex-direction:column; gap:12px; }
+  .panel { border:1px solid var(--line); border-radius:14px; padding:11px 14px; }
+  .panel h3 { font-size:9.5px; font-weight:700; letter-spacing:.1em;
+              text-transform:uppercase; color:var(--faint); margin-bottom:7px;}
+  .g-item { display:flex; gap:7px; font-size:10px; color:#3A3A3C;
+            margin-bottom:4px; line-height:1.35; }
+  .g-item i { font-style:normal; flex:none; background:var(--accent);
+            color:#fff; font-size:8px; font-weight:800; border-radius:5px;
+            padding:1px 5px; height:fit-content; margin-top:1px; }
+  .legend { display:flex; flex-direction:column; gap:5px; font-size:10px;
+            color:#3A3A3C; }
+  .sw { display:inline-block; width:11px; height:11px; border-radius:4px;
+        margin-right:7px; vertical-align:-1px; border:1px solid; }
+  .sw.llm{background:#F4F9FF;border-color:#BBD6F5;}
+  .sw.det{background:#F2FBF4;border-color:#BFE3C6;}
+  .sw.data{background:#FBF8F2;border-color:#E0D6C8;}
+  .sw.stop{background:#FDF3F2;border-color:#F2C4C4;}
+  .sw.neu{background:#FBFBFD;border-color:#E5E5EA;}
+
+  footer { margin-top:10px; font-size:9.5px; color:var(--faint);
+           display:flex; justify-content:space-between; }
+</style>
+</head>
+<body>
+
+<h1>Meridian Pipeline Intelligence — Architecture</h1>
+<p class="lead">A question flows top to bottom. <b>Green is deterministic
+code — the LLM-free zone where every number is born.</b> Blue is the only
+territory the language model touches: choosing from a menu, and phrasing —
+under veto. Guardrail pins (G1–G10) mark where each safety constraint acts.</p>
+
+<div class="grid">
+<div class="col-main">
+
+  <!-- LANE: USER + UI -->
+  <div class="lane">
+    <div class="lane-tag">Interface</div>
+    <div class="row">
+      <div class="box" style="max-width:230px;">
+        <b>Sales leader</b>
+        <span>Plain-English question — typed, or one of five suggested
+        chips.</span>
+      </div>
+      <div class="arrow">→</div>
+      <div class="box">
+        <b>Streamlit chat UI &nbsp;<code>app.py</code></b>
+        <span>Rendering only — zero business logic. KPI band, conversation,
+        trust badges, evidence tabs. Force-light theme, motion, toasts.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="varrow">↓</div>
+
+  <!-- LANE: ROUTING -->
+  <div class="lane">
+    <div class="lane-tag">Routing — choose from the menu, or refuse</div>
+    <div class="row">
+      <div class="box det">
+        <div class="gpin"><i>G2</i></div>
+        <b>Tier 1 · Keyword rules &nbsp;<code>question_router.py</code></b>
+        <span>Transparent, ordered rules. Out-of-scope guard runs first
+        (Q3, forecasts → refuse). Entities matched against the real
+        roster.</span>
+      </div>
+      <div class="arrow">→</div>
+      <div class="box llm">
+        <div class="gpin"><i>G1</i><i>G3</i></div>
+        <b>Tier 2 · LLM classifier &nbsp;<code>llm_layer.py</code></b>
+        <span>Only if rules fail. May output <b>one intent id from the
+        8-item catalog</b> — re-validated against the whitelist; entities
+        re-resolved against the rep master. Invalid → discarded.</span>
+      </div>
+      <div class="arrow">→</div>
+      <div class="box stop" style="max-width:250px;">
+        <b>Refusal path</b>
+        <span>"I can't answer that reliably" + the list of supported
+        analyses. Never a guess — every routing miss fails here, visibly.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="varrow">↓</div>
+
+  <!-- LANE: ENGINE -->
+  <div class="lane" style="border-color:#BFE3C6;">
+    <div class="lane-tag" style="color:var(--green);">Deterministic engine — the LLM-free zone</div>
+    <div class="row">
+      <div class="box data" style="max-width:225px;">
+        <b>Data &nbsp;<code>data/Q1 · data/Q2</code></b>
+        <span>Two CSV snapshots: final Q1 book + cumulative Q2 as of
+        May 2, 2026. Read-only.</span>
+      </div>
+      <div class="arrow">→</div>
+      <div class="box det">
+        <div class="gpin"><i>G5</i></div>
+        <b>Loader &amp; validation &nbsp;<code>data_loader.py</code></b>
+        <span>Schema + safe parsing → <b>fail-closed</b>. Detects findings
+        F1–F5 at runtime (recycled IDs, reopened deals, re-dated revenue,
+        edited history). 5 reconciliations must agree or nothing is
+        served.</span>
+      </div>
+      <div class="arrow">→</div>
+      <div class="box det">
+        <div class="gpin"><i>G4</i><i>G7</i><i>G8</i></div>
+        <b>8 audited analyses &nbsp;<code>analytics.py</code></b>
+        <span>Pure pandas; imports no LLM library. Every answer is an
+        <b>AnswerPacket</b>: answer + source rows + written-out calculation
+        + assumptions + warnings + a <b>self-graded trust badge</b>
+        (fixed downgrade rules). 38 golden-number tests.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="varrow">↓</div>
+
+  <!-- LANE: NARRATION -->
+  <div class="lane">
+    <div class="lane-tag">Narration — the model may phrase, never compute</div>
+    <div class="row">
+      <div class="box llm">
+        <div class="gpin"><i>G9</i></div>
+        <b>LLM narration &nbsp;<code>llm_layer.py</code></b>
+        <span>Rephrases the computed packet in 2–4 sentences. Provider-
+        agnostic (ran on Claude and Gemini, zero trust change). Any API
+        failure → silent fallback to the engine's own wording.</span>
+      </div>
+      <div class="arrow">→</div>
+      <div class="box det">
+        <div class="gpin"><i>G6</i></div>
+        <b>Numeric validator — veto power</b>
+        <span>Extracts every number from the prose; each must exist verbatim
+        in the packet. One mismatch (incl. "$3.65M"-style abbreviation) →
+        <b>entire narration discarded</b>, rejection shown on screen.</span>
+      </div>
+      <div class="arrow">→</div>
+      <div class="box" style="max-width:250px;">
+        <b>Answer card</b>
+        <span>Badge · answer · metric tiles · chart · warnings · tabs:
+        Source data / Calculation / Assumptions. "AI summary · N numbers
+        verified."</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="varrow">↓</div>
+
+  <!-- LANE: OPS -->
+  <div class="lane">
+    <div class="lane-tag">Operations</div>
+    <div class="row">
+      <div class="box det">
+        <div class="gpin"><i>G10</i></div>
+        <b>Audit log &nbsp;<code>observability.py → logs/queries.jsonl</code></b>
+        <span>Every question: route, trust level, validation verdict,
+        latency. Never-raises design; persists via Docker volume. Live
+        stats in the sidebar.</span>
+      </div>
+      <div class="arrow">&nbsp;</div>
+      <div class="box">
+        <b>Deployment &nbsp;<code>Dockerfile · docker-compose.yml</code></b>
+        <span><b>Test-gated build</b> — the 42-test suite runs inside
+        <code>docker build</code>; an image with failing data validation
+        cannot be produced. Healthcheck every 30s. One command:
+        <code>docker compose up</code>.</span>
+      </div>
+      <div class="arrow">&nbsp;</div>
+      <div class="box">
+        <b>Verification harnesses</b>
+        <span>42 automated tests · router accuracy eval (22/24 golden set) ·
+        adversarial audit posture — F4 was found by attacking our own
+        outputs; its detection is now automated.</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- SIDE PANELS -->
+<div class="side">
+  <div class="panel">
+    <h3>Legend</h3>
+    <div class="legend">
+      <div><span class="sw det"></span>Deterministic code — numbers are born
+      here; no LLM can reach it</div>
+      <div><span class="sw llm"></span>LLM-touched — menu selection and
+      phrasing only, always validated</div>
+      <div><span class="sw data"></span>Client data — read-only</div>
+      <div><span class="sw stop"></span>Refusal — a first-class answer</div>
+      <div><span class="sw neu"></span>Interface / packaging</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>Guardrails G1–G10 (pinned above)</h3>
+    <div class="g-item"><i>G1</i>Closed intent menu — 8 analyses, whitelist-
+    validated</div>
+    <div class="g-item"><i>G2</i>Out-of-scope refusal before any matching</div>
+    <div class="g-item"><i>G3</i>Entities resolved against the real roster</div>
+    <div class="g-item"><i>G4</i>No model in the numeric path — by module
+    boundary</div>
+    <div class="g-item"><i>G5</i>Fail-closed data validation + 5
+    reconciliations</div>
+    <div class="g-item"><i>G6</i>Numeric validator vetoes any uncomputed
+    number</div>
+    <div class="g-item"><i>G7</i>Self-downgrading trust badges (fixed rules)</div>
+    <div class="g-item"><i>G8</i>Mandatory receipts — AnswerPacket is the
+    only output</div>
+    <div class="g-item"><i>G9</i>Graceful degradation; vendor-agnostic</div>
+    <div class="g-item"><i>G10</i>Append-only audit log of every answer</div>
+  </div>
+
+  <div class="panel">
+    <h3>The design in one sentence</h3>
+    <div style="font-size:11px; color:#3A3A3C; line-height:1.55;">
+    The model <b>chooses from a menu and phrases results</b> — it never
+    cooks. Worst case is a <b>visible</b> misroute; the invisible wrong
+    number, the failure that burned this client, has no code path.</div>
+  </div>
+
+  <div class="panel">
+    <h3>Production path</h3>
+    <div style="font-size:10px; color:#3A3A3C; line-height:1.5;">
+    CSVs → read-only Salesforce/Snowflake with <b>snapshot journaling</b>
+    (makes F4-style re-dating impossible to hide) · engine behind an API ·
+    validations become pipeline gates · SSO + row-level access · audit log
+    → monitoring stack · intents grow one audited analysis at a time.</div>
+  </div>
+</div>
+</div>
+
+<footer>
+  <span>Architecture · Meridian Pipeline Intelligence · Sai Saran</span>
+  <span>Companions: Guardrails spec · Presenter's guide · One-page summary</span>
+</footer>
+
+</body>
+</html>

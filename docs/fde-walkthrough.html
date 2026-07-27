@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The Complete Walkthrough — FDE Steps, Architecture, and the Application</title>
+<style>
+  * { box-sizing:border-box; margin:0; padding:0;
+      font-family:-apple-system, BlinkMacSystemFont, 'Helvetica Neue',
+                  'Inter', sans-serif; -webkit-font-smoothing:antialiased; }
+  :root { --ink:#1D1D1F; --sub:#6E6E73; --faint:#86868B; --line:#E5E5EA;
+          --accent:#0071E3; --green:#1E7E34; --amber:#955300; --red:#C2352B; }
+  body { background:#fff; color:var(--ink); max-width:800px; margin:0 auto;
+         padding:40px 30px; font-size:13.5px; line-height:1.65; }
+  @media print { body{padding:0;} @page{margin:16mm 15mm;}
+                 .chapter{page-break-before:always;} .cover{page-break-before:avoid;} }
+
+  h1 { font-size:25px; font-weight:700; letter-spacing:-.02em; margin-bottom:6px;}
+  h2 { font-size:18.5px; font-weight:700; letter-spacing:-.015em; margin:24px 0 4px;}
+  h3 { font-size:14.5px; font-weight:650; margin:16px 0 6px; }
+  p  { margin:8px 0; color:#2B2B2E; }
+  .lead { color:var(--sub); font-size:14.5px; }
+  ul, ol { margin:8px 0 8px 22px; }
+  li { margin:4px 0; color:#2B2B2E; }
+  b, strong { color:var(--ink); }
+
+  .kicker { font-size:10.5px; font-weight:700; letter-spacing:.12em;
+            text-transform:uppercase; color:var(--accent); margin-bottom:8px;}
+  .part { font-size:11px; font-weight:700; letter-spacing:.12em;
+          text-transform:uppercase; color:var(--accent); margin-bottom:2px; }
+
+  .simple { border:1px solid var(--line); background:#FBFBFD; border-radius:10px;
+         padding:10px 14px; margin:10px 0; font-size:12.8px; }
+  .simple::before { content:'IN SIMPLE WORDS'; display:block; font-size:9.5px;
+         font-weight:700; letter-spacing:.1em; color:var(--faint);
+         margin-bottom:3px; }
+  .wedid { border:1px solid #BFE3C6; background:#F2FBF4; border-radius:10px;
+         padding:10px 14px; margin:10px 0; font-size:12.8px; }
+  .wedid::before { content:'WHAT WE DID IN THIS PROJECT'; display:block;
+         font-size:9.5px; font-weight:700; letter-spacing:.1em;
+         color:var(--green); margin-bottom:3px; }
+  .say { border-left:3px solid #0071E3; background:#F4F9FF;
+         border-radius:0 10px 10px 0; padding:10px 14px; margin:10px 0;
+         font-size:12.8px; font-style:italic; color:#173A5E; }
+  .say::before { content:'SAY IT LIKE THIS'; display:block; font-style:normal;
+         font-size:9.5px; font-weight:700; letter-spacing:.1em;
+         color:var(--accent); margin-bottom:3px; }
+  .warnbox { border-left:3px solid #FF9500; background:#FFFBF4;
+         border-radius:0 10px 10px 0; padding:9px 14px; margin:10px 0;
+         font-size:12.5px; }
+
+  table { width:100%; border-collapse:collapse; font-size:12px; margin:10px 0;}
+  th { text-align:left; font-size:10px; font-weight:700; letter-spacing:.06em;
+       text-transform:uppercase; color:var(--faint); padding:5px 10px 5px 0;
+       border-bottom:1px solid var(--line); }
+  td { padding:6px 10px 6px 0; border-bottom:1px solid #F0F0F2;
+       vertical-align:top; }
+  td.num { font-variant-numeric:tabular-nums; font-weight:600; white-space:nowrap;}
+  .small { font-size:11.5px; color:var(--sub); }
+  .toc td { border:none; padding:3px 0; }
+  .cover-meta { color:var(--faint); font-size:12px; margin:10px 0 24px; }
+  code { font-family:'SF Mono', ui-monospace, Menlo, monospace; font-size:12px;
+         background:#F5F5F7; border-radius:5px; padding:1px 6px; }
+  .chapter { margin-top:10px; }
+  hr { border:none; border-top:1px solid var(--line); margin:16px 0; }
+</style>
+</head>
+<body>
+
+<!-- ================= COVER ================= -->
+<div class="cover">
+<div class="kicker">Learn-and-speak walkthrough · very simple English</div>
+<h1>The Complete Walkthrough</h1>
+<p class="lead">One document that explains everything, end to end: how a
+Forward Deployed Engineer works (the eight steps), how our system is built
+(the architecture), and how the application we made answers the four
+questions the panel will judge it by. Written so that anyone — technical or
+not — can follow it.</p>
+<div class="cover-meta">Project: Meridian Pipeline Intelligence · Data as of
+May 2, 2026 · Prepared by Sai Saran</div>
+
+<h3>The three parts</h3>
+<table class="toc">
+<tr><td><b>PART ONE — The FDE way of working</b></td><td class="small"></td></tr>
+<tr><td>1. What is a Forward Deployed Engineer?</td><td class="small"></td></tr>
+<tr><td>2. Step 1 — Requirement gathering</td><td class="small"></td></tr>
+<tr><td>3. Step 2 — Choosing the model and AI tools</td><td class="small"></td></tr>
+<tr><td>4. Step 3 — Implementation</td><td class="small"></td></tr>
+<tr><td>5. Step 4 — RAG (and why we said no to it)</td><td class="small"></td></tr>
+<tr><td>6. Step 5 — Front-end integration</td><td class="small"></td></tr>
+<tr><td>7. Step 6 — Deployment</td><td class="small"></td></tr>
+<tr><td>8. Step 7 — Support and observability</td><td class="small"></td></tr>
+<tr><td>9. Step 8 — Documentation</td><td class="small"></td></tr>
+<tr><td><b>PART TWO — The architecture</b></td><td class="small"></td></tr>
+<tr><td>10. The big idea: the restaurant</td><td class="small"></td></tr>
+<tr><td>11. The five lanes, one by one</td><td class="small"></td></tr>
+<tr><td>12. The ten guardrails in simple words</td><td class="small"></td></tr>
+<tr><td>13. The five data problems, in simple words</td><td class="small"></td></tr>
+<tr><td><b>PART THREE — The application, judged by the four questions</b></td><td class="small"></td></tr>
+<tr><td>14. Question 1 — Did we answer a real business question, under time pressure?</td><td class="small"></td></tr>
+<tr><td>15. Question 2 — Did we make defensible cuts?</td><td class="small"></td></tr>
+<tr><td>16. Question 3 — Trust and traceability: walking a skeptical CCO through it</td><td class="small"></td></tr>
+<tr><td>17. Question 4 — What does it prove, and what does it not?</td><td class="small"></td></tr>
+<tr><td>18. Likely questions, short answers</td><td class="small"></td></tr>
+<tr><td>19. The one-minute closing speech</td><td class="small"></td></tr>
+<tr><td>Appendix A — The numbers you must know</td><td class="small"></td></tr>
+<tr><td>Appendix B — Simple glossary</td><td class="small"></td></tr>
+</table>
+</div>
+
+<!-- ================= CH 1 ================= -->
+<div class="chapter">
+<div class="part">Part One · The FDE way of working</div>
+<h2>1 · What is a Forward Deployed Engineer?</h2>
+
+<p>A Forward Deployed Engineer — FDE for short — is an engineer who works
+<b>at the client's side</b>, not back at headquarters. A normal engineer
+builds a product and many customers use it. An FDE goes to one customer,
+understands their exact problem, and builds something that solves it —
+quickly, and in a way the customer can trust and use.</p>
+
+<p>Because every client is different, FDEs follow a repeatable set of steps
+so nothing important is missed. The eight steps are:</p>
+
+<ol>
+<li><b>Requirement gathering</b> — understand what is needed, what the tool
+should and should not do.</li>
+<li><b>Choosing the model and AI tools</b> — pick the right technology for
+the job.</li>
+<li><b>Implementation</b> — build it.</li>
+<li><b>RAG</b> — if the assistant needs to read documents, connect it to
+them. (We will explain this — and why we chose not to use it.)</li>
+<li><b>Front-end integration</b> — give people a screen to talk to it.</li>
+<li><b>Deployment</b> — package it so it runs anywhere, reliably.</li>
+<li><b>Support and observability</b> — watch it while it runs; keep records
+of what it does.</li>
+<li><b>Documentation</b> — write everything down before moving on.</li>
+</ol>
+
+<p>The next eight chapters take each step in turn. For each one you get:
+what the step means in simple words, exactly what we did in this project,
+and a sentence you can say in the meeting.</p>
+
+<div class="say">I followed the standard FDE delivery lifecycle end to end —
+requirements, tool selection, implementation, integration, deployment,
+observability, and documentation — and I can show you evidence for each
+step. The one step I deliberately skipped is RAG, and I'll explain exactly
+why skipping it was the right engineering call for this data.</div>
+</div>
+
+<!-- ================= CH 2 ================= -->
+<div class="chapter">
+<h2>2 · Step 1 — Requirement gathering</h2>
+
+<div class="simple">Before you build anything, find out what is actually
+needed. Who will use the tool? What questions must it answer? What must it
+never do? Writing this down first prevents building the wrong thing
+fast.</div>
+
+<p>In a normal engagement you would sit with the product team and ask
+questions. In this project, the "client" spoke to us through a written
+brief — so we squeezed every drop of meaning out of it.</p>
+
+<div class="wedid">
+<p><b>The scope</b> — Meridian Systems, a company that sells software, has
+sales data spread across places that don't talk to each other. Leaders wait
+days for simple answers. We were asked to build a tool where a sales leader
+types a question in plain English and gets an answer.</p>
+<p><b>The objectives</b> — every answer must have three parts: a direct
+answer (no dodging), the actual data rows behind it (proof, not promises),
+and a clear warning whenever the answer relies on incomplete data or an
+assumption.</p>
+<p><b>The guardrails</b> — this was the special part. Meridian tried an AI
+tool before. It invented numbers, and the Chief Commercial Officer (CCO —
+the top sales boss) caught it doing so in a meeting. So the hidden
+requirement, more important than any feature, was: <b>this tool must be
+impossible to catch lying.</b> We turned that into ten written guardrails
+(Chapter 12).</p>
+<p><b>The concrete targets</b> — three questions the tool must handle:
+how is the Enterprise segment tracking against quota; which salespeople are
+at risk of missing this quarter; and how does this quarter compare to last
+quarter at the same point in time.</p>
+<p><b>One extra thing we did that wasn't asked:</b> before building, we
+studied the data itself, line by line — and found five serious problems in
+it (Chapter 13). Requirement gathering isn't only listening to people; it's
+also listening to the data.</p>
+</div>
+
+<div class="say">The written requirement was "answer three questions." The
+real requirement, reading the story, was "win back a CCO who was burned by
+AI." Every design decision I made traces back to that second, unwritten
+requirement.</div>
+</div>
+
+<!-- ================= CH 3 ================= -->
+<div class="chapter">
+<h2>3 · Step 2 — Choosing the model and AI tools</h2>
+
+<div class="simple">Pick the technology that fits the problem — the
+programming language, the libraries, and which AI model to use. Good
+engineers also decide where <b>not</b> to use AI.</div>
+
+<div class="wedid">
+<p><b>Language and libraries:</b> Python (the standard language for data
+work), <b>pandas</b> (a library that works with tables of data, like a very
+powerful spreadsheet), <b>Streamlit</b> (turns Python into a web page
+quickly — perfect for a prototype), and Plotly for charts.</p>
+<p><b>The AI model:</b> we built the app so the AI part is a plug. It ran
+first on Anthropic's Claude, then on Google's Gemini — switched in one
+file, with zero change to any safety property. That was deliberate: it
+proves our safety lives in <b>our code</b>, not in any vendor's model. No
+lock-in.</p>
+<p><b>The most important selection decision was not which model — it was
+where the model is allowed to work.</b> We gave the AI exactly two jobs:
+(1) understand which of our eight approved questions the user is asking,
+and (2) turn a finished, computed answer into friendly sentences. It is
+never allowed to compute a number. This decision came straight from the
+requirement: a model that can't touch numbers can't invent them.</p>
+</div>
+
+<div class="say">The headline tool decision wasn't Claude versus Gemini —
+we ran both, and swapping took one file. The real decision was where AI is
+allowed at all: it understands questions and phrases answers; it never
+computes. That's what makes the last vendor's failure impossible here.</div>
+</div>
+
+<!-- ================= CH 4 ================= -->
+<div class="chapter">
+<h2>4 · Step 3 — Implementation</h2>
+
+<div class="simple">Now build it. Good implementation keeps different jobs
+in different files, so each part can be checked — and replaced — on its
+own.</div>
+
+<div class="wedid">
+<p>The application is about two thousand lines of Python in six clean
+pieces:</p>
+<ul>
+<li><code>config.py</code> — every date, threshold and assumption on one
+page. An auditor reads this single file and knows all the rules.</li>
+<li><code>data_loader.py</code> — reads the client's files, checks them,
+and refuses to continue if anything is wrong. Also automatically discovers
+the five data problems.</li>
+<li><code>analytics.py</code> — the calculator. Eight analyses, all plain
+arithmetic. <b>No AI can reach this file.</b> Every answer it produces
+carries its own evidence, formula, warnings, and a trust grade.</li>
+<li><code>question_router.py</code> — matches a question to one of the
+eight analyses using simple, readable rules.</li>
+<li><code>llm_layer.py</code> — the only file that talks to AI, including
+the validator that checks every AI sentence.</li>
+<li><code>app.py</code> — the screen. It only displays; it computes
+nothing.</li>
+</ul>
+<p><b>An honest difference from the standard playbook:</b> the classic FDE
+lifecycle builds a separate API with FastAPI. We didn't — for a prototype,
+that's an extra moving part with no extra proof. But the calculator is
+already shaped like an API (every answer is one tidy package), so
+extracting it behind FastAPI is week one of the production plan, not a
+rewrite.</p>
+<p>Alongside the app we wrote <b>42 automated tests</b> — small programs
+that check our program. Every important number was first calculated by hand
+from the raw files, then locked into a test. If anything changes, a test
+fails loudly.</p>
+</div>
+
+<div class="say">The build rule was: every number must be born in one file
+that AI cannot reach, and every answer must leave that file carrying its
+own evidence. Everything else — the chat, the AI, the charts — is wrapping
+around that core.</div>
+</div>
+
+<!-- ================= CH 5 ================= -->
+<div class="chapter">
+<h2>5 · Step 4 — RAG, and why we said no to it</h2>
+
+<div class="simple">RAG stands for Retrieval-Augmented Generation. In plain
+words: before the AI answers, the system <b>fetches relevant documents</b>
+(from a special search database, like ChromaDB) and hands them to the AI to
+read. It's the right tool when answers live inside <b>documents</b> —
+manuals, policies, contracts, support articles.</div>
+
+<p>The standard lifecycle includes RAG because most assistants answer from
+documents. So why did we skip it? Because of what our data <b>is</b>.</p>
+
+<div class="wedid">
+<p>Meridian's data is not documents. It is <b>structured tables</b> — rows
+and columns of deals, dollar values, and dates. Questions like "what is
+Enterprise attainment?" are not answered by <i>finding a similar
+paragraph</i>; they are answered by <i>filtering rows and adding numbers</i>.</p>
+<p>RAG works by similarity search — "find me text that looks related to
+this question." Similarity is fuzzy by nature. Fuzzy retrieval feeding an
+AI is exactly how you get an answer that is <i>plausible but wrong</i> —
+the precise failure that burned this client. For tables, retrieval should
+be <b>exact</b>: a filter, not a guess.</p>
+<p>So our "grounding" — the thing that ties answers to real data — is
+stronger than RAG for this job: deterministic queries, the actual source
+rows attached to every answer, and a validator that blocks any number the
+calculator didn't produce.</p>
+<p><b>When we would add RAG:</b> the day Meridian brings unstructured
+text — contracts, call notes, sales playbooks. Then RAG becomes analysis
+number nine: built, tested, and audited like the other eight, with
+citations back to the exact document passage.</p>
+</div>
+
+<div class="say">We skipped RAG on purpose, not by omission. RAG grounds
+answers in documents; our data is tables, where grounding should be an
+exact query, not a similarity search. Bolting a vector database onto
+numeric data is how you make confident wrong answers — the one thing this
+client cannot forgive.</div>
+</div>
+
+<!-- ================= CH 6 ================= -->
+<div class="chapter">
+<h2>6 · Step 5 — Front-end integration</h2>
+
+<div class="simple">Give users a screen. In the standard playbook this is a
+chat widget embedded in an existing website. The goal is the same
+everywhere: meet users where they are, and make the tool feel effortless.</div>
+
+<div class="wedid">
+<p>There is no existing Meridian website in this scenario, so the
+front-end <b>is</b> the application — a clean, light, chat-style web page.
+What's on it, top to bottom:</p>
+<ul>
+<li><b>Four big cards</b> that appear the moment the page loads, counting
+up with a small animation: the quarter's target ($6.2M), what's actually
+been won ($518K), what's still being worked ($5.2M), and the gap that
+remains even in the best case ($484K). The state of the quarter, before
+anyone asks anything.</li>
+<li><b>Five suggested question buttons</b> — one click each for the
+questions leaders ask most.</li>
+<li><b>A chat box</b> for anything else, in ordinary English.</li>
+<li><b>Every answer as a card</b>: a colored trust grade, the answer in one
+or two sentences, the key numbers as tiles, a chart, any warnings, and
+three tabs — the source rows, the exact calculation, and the assumptions.</li>
+<li><b>A sidebar</b> where the tool is honest about itself: data checks
+passed, the AI on/off switch, the five known data problems, a live activity
+log, and the full methodology.</li>
+</ul>
+<p>Design choices were deliberate too: light, calm, no clutter — a tool for
+an executive, not a toy. In production, the same answer "package" can be
+rendered inside any existing portal; the screen is the replaceable part.</p>
+</div>
+
+<div class="say">The front-end has one design goal: nothing on this screen
+asks to be trusted — everything on it shows why it can be. Even the layout
+is an argument: the receipts are one click away on every single answer.</div>
+</div>
+
+<!-- ================= CH 7 ================= -->
+<div class="chapter">
+<h2>7 · Step 6 — Deployment</h2>
+
+<div class="simple">Packaging the app so it runs the same way on any
+machine. <b>Docker</b> puts the app and everything it needs into a sealed
+box called a container. <b>Docker Compose</b> starts that box with one
+command. "It works on my laptop" becomes "it works anywhere."</div>
+
+<div class="wedid">
+<p>We containerized the application. One command —
+<code>docker compose up</code> — builds and starts it, with the AI keys
+passed in as settings and the activity log stored outside the box so it
+survives restarts.</p>
+<p>Two touches worth pointing out, because they carry the trust idea into
+deployment:</p>
+<ul>
+<li><b>The build refuses to produce a broken image.</b> All 42 tests run
+<i>inside</i> the build. If the data fails validation or any number is
+wrong, there is no image at all. You cannot ship a bad build even by
+accident.</li>
+<li><b>The container checks its own health</b> every 30 seconds, so an
+operations team knows immediately if it stops responding.</li>
+</ul>
+</div>
+
+<div class="say">Deployment follows the same rule as everything else: fail
+closed. The Docker build runs the entire test suite — if the data doesn't
+reconcile, the image simply cannot be built. A broken version can't reach
+users, because it can't even reach existence.</div>
+</div>
+
+<!-- ================= CH 8 ================= -->
+<div class="chapter">
+<h2>8 · Step 7 — Support and observability</h2>
+
+<div class="simple">Once a tool is live, someone must be able to see what
+it's doing — how many questions, how fast, any failures — and to look back
+at what it said if a question ever comes up. That record-keeping is called
+observability.</div>
+
+<div class="wedid">
+<p><b>The audit log.</b> Every question asked of the tool is written to a
+permanent log file: the time, the question, how it was understood, what
+trust grade the answer carried, whether the AI's wording passed validation,
+and how long it took. If anyone ever asks "what did the tool tell people
+last Tuesday?" — the answer exists.</p>
+<p><b>Live stats on screen.</b> The sidebar shows the running counts:
+questions logged, answered versus refused, AI summaries verified, average
+response time — plus the most recent questions. Observability isn't hidden
+in a server room; it's part of the product's honesty.</p>
+<p><b>Self-monitoring.</b> The five data checks run at every start; the
+container health-check runs every 30 seconds; and the logging itself is
+built to never crash the app — if the log can't be written, the tool keeps
+answering.</p>
+<p><b>Support posture.</b> When the AI provider had a real outage during
+our build (a billing failure), the app degraded gracefully — it kept
+answering with its own wording, and users saw no error. We watched our own
+"support story" work live.</p>
+</div>
+
+<div class="say">Every answer this tool has ever given is in an audit log,
+with its trust grade and its validation result. In production that log
+feeds the monitoring stack — but even on a laptop, accountability is
+already built in.</div>
+</div>
+
+<!-- ================= CH 9 ================= -->
+<div class="chapter">
+<h2>9 · Step 8 — Documentation</h2>
+
+<div class="simple">Before moving to the next assignment, write everything
+down — so the client's own team can run, trust, and extend the work without
+you. Documentation is what makes a hand-off possible.</div>
+
+<div class="wedid">
+<p>The documentation kit, all in the project:</p>
+<ul>
+<li><b>README</b> — what it is, how to run it (locally or with Docker),
+and an index of everything else.</li>
+<li><b>One-page summary</b> (leave-behind PDF) — architecture, the three
+answers, the five findings. For executives.</li>
+<li><b>Presenter's guide</b> (24 pages) — a full plain-English walkthrough
+of the product, paced for an hour.</li>
+<li><b>Guardrails specification</b> (4 pages) — the ten safety
+constraints: what each prevents, where it lives in the code, how to
+demonstrate it.</li>
+<li><b>Architecture diagram</b> (1 page) — the whole system in one
+picture, with the guardrails pinned where they act.</li>
+<li><b>This walkthrough</b> — the end-to-end story.</li>
+<li><b>Inside the app itself</b> — a methodology panel with every metric
+definition and assumption. The documentation lives where the users
+are.</li>
+<li><b>The tests as documentation</b> — 42 tests that state, in runnable
+form, exactly what every number should be. Documentation that checks
+itself.</li>
+</ul>
+</div>
+
+<div class="say">My rule for documentation: the client's own team should be
+able to run it, trust it, and extend it without me in the room. If I'm
+still needed to explain it, the documentation isn't finished.</div>
+</div>
+
+<!-- ================= CH 10 ================= -->
+<div class="chapter">
+<div class="part">Part Two · The architecture</div>
+<h2>10 · The big idea: the restaurant</h2>
+
+<p>Every architecture conversation about this system can start with one
+picture: a restaurant.</p>
+
+<p>The AI is the <b>waiter</b>. It listens to what you ask for, works out
+which item from the menu you mean, and later describes the finished dish in
+a pleasant sentence. But the waiter <b>never cooks</b>.</p>
+
+<p>The <b>kitchen</b> is ordinary, checkable computer code — the same
+arithmetic a careful analyst would do in a spreadsheet, but automated,
+tested, and double-checked. Only the kitchen produces numbers.</p>
+
+<p>The <b>menu is short on purpose</b>: eight dishes — eight kinds of
+questions — each one prepared, tasted, and audited before it was ever
+served to a customer. If you ask for something not on the menu, the waiter
+says so honestly and shows you the menu, instead of improvising a dish
+that might poison someone.</p>
+
+<p>And there is one more character the last restaurant didn't have: a
+<b>food inspector</b> standing between the kitchen and your table. Before
+any AI-phrased answer reaches you, the inspector checks every number in
+the sentence against what the kitchen actually produced. One number that
+doesn't match — the whole sentence is thrown out and replaced with the
+kitchen's own plain wording, and you're told this happened.</p>
+
+<div class="say">The failure of the last tool was that one system was both
+waiter and cook — so every answer was a potential fabrication. We separated
+the jobs permanently. The model chooses from a menu and phrases results.
+It never cooks. And an inspector checks every plate.</div>
+</div>
+
+<!-- ================= CH 11 ================= -->
+<div class="chapter">
+<h2>11 · The five lanes, one by one</h2>
+
+<p>The architecture diagram (docs/architecture.pdf) shows five horizontal
+lanes. A question falls through them top to bottom. Color tells you who
+works where: <b>green is deterministic code</b> — the "kitchen," where AI
+cannot reach; <b>blue is the AI</b> — exactly two boxes, both followed by
+checks; <b>red is the refusal path</b> — drawn as a first-class
+destination, not an error.</p>
+
+<h3>Lane 1 — Interface</h3>
+<p>The sales leader and the chat screen. The screen only displays. It owns
+no logic and computes nothing — so there is nothing on it to distrust.</p>
+
+<h3>Lane 2 — Routing: choose from the menu, or refuse</h3>
+<p>First, simple keyword rules try to match the question to one of the
+eight analyses — rules a human can read in a minute. Questions about
+things the data can't support (next quarter, forecasts) are refused before
+anything else happens. If the rules can't place a question, the AI gets its
+first job: pick which menu item fits. Its choice is then re-checked
+against the menu, and any person or segment it names is re-checked against
+the real roster. Anything invalid is thrown away. If nothing fits — the
+red refusal box: "I can't answer that reliably," plus the list of what it
+can answer.</p>
+
+<h3>Lane 3 — The deterministic engine (the green lane)</h3>
+<p>The heart. The client's two data files are read and checked — wrong
+shape, unreadable value, or totals that don't reconcile five different
+ways, and the app refuses to serve anything at all. The same loading step
+automatically discovers the five data problems (F1–F5). Then the chosen
+analysis runs: plain filtering and arithmetic. It produces not just a
+number but a complete package — the answer, the source rows, the written
+calculation, the assumptions used, the warnings that apply, and a
+self-assigned trust grade.</p>
+
+<h3>Lane 4 — Narration: the model may phrase, never compute</h3>
+<p>The AI's second job: turn that package into two to four friendly
+sentences. Then the inspector — the numeric validator — extracts every
+number from those sentences and demands each one exist, exactly, in the
+package. One mismatch and the entire narration is rejected (visibly). Even
+sneaky changes are caught: writing "$3.65M" instead of $3,650,000 counts
+as a mismatch, because silently changing units is still distortion.</p>
+
+<h3>Lane 5 — Operations</h3>
+<p>The audit log records every question and answer. Docker packages
+everything, with the test suite as a gate on the build itself. The
+verification harnesses — 42 tests and a routing accuracy benchmark — live
+here too.</p>
+
+<div class="say">If you remember one thing from the diagram, remember the
+colors: numbers are born only in the green lane, the model only ever
+touches the two blue boxes, and both blue boxes are followed by a check
+written in ordinary code.</div>
+</div>
+
+<!-- ================= CH 12 ================= -->
+<div class="chapter">
+<h2>12 · The ten guardrails in simple words</h2>
+
+<p>A guardrail is a safety constraint that keeps the assistant inside its
+intended job. Ours share one principle: <b>enforced by code, not by
+prompt.</b> We never ask the model to behave. We make misbehaving either
+impossible (there's no code path for it) or immediately visible.</p>
+
+<table>
+<tr><th></th><th>Guardrail</th><th>In simple words</th></tr>
+<tr><td><b>G1</b></td><td>Closed menu</td><td>The tool can only do its
+eight approved analyses. The AI picks from that list; its pick is
+re-checked. There is no way to talk it into a new calculation.</td></tr>
+<tr><td><b>G2</b></td><td>Honest refusal</td><td>Questions about things
+the data can't support get "I can't answer that reliably" — plus the list
+of what it can do. Never a guess.</td></tr>
+<tr><td><b>G3</b></td><td>Real names only</td><td>If the AI says the
+question is about a person or segment, that name must exist in the real
+roster, or the routing is discarded.</td></tr>
+<tr><td><b>G4</b></td><td>AI can't touch numbers</td><td>Every figure
+comes from plain, tested code the model cannot reach. Not a rule it
+follows — a wall it can't cross.</td></tr>
+<tr><td><b>G5</b></td><td>Fail closed</td><td>If the data fails any check,
+the app shows nothing rather than possibly-wrong numbers. Even the Docker
+build refuses to produce an image if tests fail.</td></tr>
+<tr><td><b>G6</b></td><td>The number inspector</td><td>Every number in an
+AI sentence must match the computed results exactly, or the whole sentence
+is thrown out — and you're shown that it was.</td></tr>
+<tr><td><b>G7</b></td><td>Self-grading answers</td><td>Every answer wears
+a color grade set by fixed rules — green, amber, or red ("a data problem
+dominates this; fix the data, don't act on the number").</td></tr>
+<tr><td><b>G8</b></td><td>Receipts always</td><td>An answer cannot exist
+without its source rows, formula, and warnings attached. It's the only
+output format the system has.</td></tr>
+<tr><td><b>G9</b></td><td>Never depends on the AI</td><td>If the AI is
+down, slow, or wrong, the app quietly answers in its own plain wording.
+The AI is a nicety, never a dependency — and swapping vendors changed
+nothing.</td></tr>
+<tr><td><b>G10</b></td><td>Everything on record</td><td>Every question and
+answer is logged with its trust grade and validation result. Nothing the
+tool says is unaccountable.</td></tr>
+</table>
+
+<div class="say">If a panelist asks "what if the model ignores its
+instructions?" — the answer is: it can ignore every instruction we gave it
+and still cannot put a wrong number on this screen. That's the difference
+between a guardrail written in a prompt and a guardrail written in
+code.</div>
+</div>
+
+<!-- ================= CH 13 (findings) ================= -->
+<div class="chapter">
+<h2>13 · The five data problems, in simple words</h2>
+
+<p>While loading Meridian's files, the tool compared the two snapshots —
+the closed Q1 books and the current Q2 system — record by record. Five
+kinds of problems appeared. They matter twice over: they change what the
+sales numbers mean, and finding them is the best proof that this tool
+checks instead of assuming. Together they touch <b>28 of the 92 deals</b>.</p>
+
+<h3>F1 — The same ticket number given to two different customers
+<span class="small">(13 deals · $1.97 million)</span></h3>
+<p>Every deal has an ID number, like a ticket. Thirteen ticket numbers
+point to <b>completely different companies</b> in the two snapshots — in
+Q1, ticket OPP-076 was a small won deal for "Cascade Financial"; in Q2 the
+same ticket is a brand-new, unfinished deal for "Evergreen Capital."
+Someone deleted old records and reused their numbers. Why it matters: any
+"how did this deal change over time" comparison using these tickets is
+nonsense — and 38% of the entire open pipeline sits on them. What we do:
+treat the current records as real, ban them from history comparisons, and
+flag every answer they touch.</p>
+
+<h3>F2 — Finished deals that came back to life
+<span class="small">(7 deals · $576 thousand)</span></h3>
+<p>Seven deals that were finished in the closed Q1 books — won or lost —
+are open again in the Q2 system, or flipped outcome. "Final" is supposed
+to mean final. Worse, some of their money is now counted twice in spirit:
+already in Q1's results, and also sitting in Q2's pipeline as if it could
+be won again. What we do: Q1 reporting follows the closed books; these
+deals count in Q2 only as open pipeline; the overlap is flagged.</p>
+
+<h3>F3 — Deals past their promised date
+<span class="small">(2 deals · $87 thousand)</span></h3>
+<p>Two open deals are past the dates their salespeople predicted. Small
+housekeeping issue — kept, and flagged.</p>
+
+<h3>F4 — The same revenue counted in two quarters
+<span class="small">(3 deals · $373 thousand — the big one)</span></h3>
+<p>Three deals are marked <b>won in both snapshots</b>, but their dates
+were moved: won in late March per the closed Q1 books, won in early April
+per the Q2 system. The same money appears in both quarters' results. Why
+it's the most serious finding: of the $518,000 the system calls "won this
+quarter," $373,000 — seventy-two percent — is this recycled money. Truly
+new Q2 sales: $145,000. For Enterprise, the effect is total: its only
+"win" this quarter is one of these deals, so truly-new Enterprise revenue
+is <b>zero</b>. This also touches finance and pay: moving revenue across a
+closed quarter is the kind of thing auditors ask about. What we do: show
+both figures everywhere, and any answer dominated by this problem grades
+itself red.</p>
+
+<h3>F5 — History quietly edited
+<span class="small">(3 deals · $260 thousand)</span></h3>
+<p>Three finished deals had their value or date changed after the books
+closed — one won deal went from $155,000 to $120,000 with no change in
+outcome and no explanation. Why it matters: anyone re-running "Q1 results"
+from the current system now gets different totals than the closed books —
+a guaranteed argument in a meeting unless someone surfaces it first. What
+we do: Q1 follows the Q1 file; the edits are shown, not silently
+adopted.</p>
+
+<div class="say">We didn't find these problems by luck — the tool finds
+them automatically, every time it loads, and if Meridian fixes the source
+records, every flag clears itself. The most valuable thing on this screen
+might not be any sales number. It's the list of reasons to be careful
+about the sales numbers.</div>
+</div>
+
+<!-- ================= CH 13 ================= -->
+<div class="chapter">
+<div class="part">Part Three · The application, judged by the four questions</div>
+<h2>14 · Question 1 — Did we answer a real business question, under time pressure?</h2>
+
+<p>The brief asked for three questions at minimum. The tool answers all
+three — plus five more analyses — and each answer changed what a leader
+would actually do. That last part is what makes a question "real."</p>
+
+<h3>"How is Enterprise tracking against quota?"</h3>
+<p>Answer: $165,000 won of a $3,650,000 target — 4.5%, with 35% of the
+quarter gone. But the tool grades its own answer <b>red</b>, because that
+entire $165,000 is a deal the closed Q1 books already counted (its date
+was moved). Truly new Enterprise revenue this quarter: <b>zero</b>. A
+dashboard would have said "4.5%" and moved on. This answer changes the
+Enterprise conversation entirely.</p>
+
+<h3>"Which reps are at risk of missing Q2?"</h3>
+<p>Answer: three people — Kevin Marsh, Lisa Park, Ryan Cole — are
+mathematically short: even winning every open deal wouldn't reach their
+target. Three others the tool <b>refuses to grade</b>, because most of
+their pipeline sits on corrupted records. That refusal protects careers —
+it's the difference between "bad quarter" and "bad data."</p>
+
+<h3>"How does Q2 compare to Q1 at the same point?"</h3>
+<p>Answer: fairly compared at day 32 of each quarter, Q2 has won $518,000
+versus Q1's $1,260,000 — about 41% of last quarter's pace. And counting
+only truly-new deals, just $145,000. Balanced with honesty: Q1 also
+started slow and finished at 102%, so the message is "create pipeline
+now," not "panic."</p>
+
+<h3>And one number nobody asked for</h3>
+<p>The most important figure in the dataset appears before any question is
+asked: <b>$484,000 of the quarter's target is uncovered even if Meridian
+wins every single open deal</b> — and the earliest sales stage is
+completely empty, meaning nothing new is being seeded. That's a finding a
+CCO acts on the same day.</p>
+
+<h3>The time constraint, honestly</h3>
+<p>The estimated scope was one to two hours; the deterministic core — data
+checks, the three answers, evidence, tests — fits that scope. I then
+deliberately extended it (the AI layer with validation, deployment,
+observability, documentation) to show the production direction. I'll
+happily talk about which parts belong to which phase — the layering was
+the plan, not an accident.</p>
+
+<div class="say">Every one of the three answers came back with a twist a
+dashboard would have missed — zero new Enterprise revenue, three
+unjudgeable reps, a pace gap that survives every fairness check. Answering
+the question is table stakes. Changing the decision is the job.</div>
+</div>
+
+<!-- ================= CH 14 ================= -->
+<div class="chapter">
+<h2>15 · Question 2 — Did we make defensible cuts?</h2>
+
+<p>Under time pressure, what you <i>don't</i> build matters as much as
+what you do. Every cut below follows one test: <b>does this trade
+verifiability for capability?</b> If a feature would make the tool more
+capable but harder to verify, it was cut — because for this client,
+unverifiable capability has negative value.</p>
+
+<table>
+<tr><th>What we cut</th><th>Why — and what we did instead</th></tr>
+<tr><td><b>Free-form "ask anything"</b></td><td>Letting the AI write its
+own database queries means infinite possible calculations — impossible to
+pre-audit, and the exact source of "plausible but wrong." Instead: eight
+audited analyses, growing one at a time.</td></tr>
+<tr><td><b>RAG / vector database</b></td><td>Right tool for documents;
+wrong tool for tables. Retrieval on numeric data should be exact, not
+fuzzy. Added the day the client brings documents. (Chapter 5.)</td></tr>
+<tr><td><b>Forecasting / "weighted pipeline"</b></td><td>Predicting which
+open deals will close requires historical stage-by-stage outcomes the data
+doesn't contain. Any probabilities would be invented numbers — the exact
+sin that burned this client. Instead: coverage measured against the
+<i>real</i> Q1 win rate (77.9%).</td></tr>
+<tr><td><b>A separate API (FastAPI)</b></td><td>An extra moving part with
+no extra proof at prototype stage. The engine is already API-shaped;
+extraction is week one of production.</td></tr>
+<tr><td><b>Login / user accounts</b></td><td>Security theater on sample
+data. Designed for production (single sign-on, role-based views), not
+faked in a demo.</td></tr>
+<tr><td><b>Editing the client's data</b></td><td>The tool found five data
+problems; it flags them and never "fixes" them silently. Correcting the
+books is the client's decision, with finance in the room.</td></tr>
+<tr><td><b>Corporate branding</b></td><td>Kept the design neutral — in a
+real engagement this tool would wear the client's brand, because it's
+their leaders' tool.</td></tr>
+</table>
+
+<div class="say">My test for every cut was the same: does it trade
+verifiability for capability? If yes, it went — because for a client
+burned by a lying tool, capability you can't verify is worth less than
+nothing. And each cut has a written path back in, one audited step at a
+time.</div>
+</div>
+
+<!-- ================= CH 15 ================= -->
+<div class="chapter">
+<h2>16 · Question 3 — Trust and traceability: walking a skeptical CCO through it</h2>
+
+<p>This is the heart of the assignment. Not "is the code safe" — but "how
+would you stand in front of the person who was embarrassed by AI, and earn
+the next ten minutes of their attention?" Here is that walk, step by step.
+It works because at no point do we ask for belief; every step hands over
+control.</p>
+
+<h3>Minute one — open with the tool's own bad news</h3>
+<p>Don't start with a success. Start with the red badge: "I asked it your
+own question — how is Enterprise tracking — and I want you to see that its
+answer is <i>red</i>. The tool is telling us its own headline number can't
+be trusted, because it discovered your Q1 books and Q2 system share the
+same revenue." A tool that volunteers its own bad news is the opposite of
+the one that lied.</p>
+
+<h3>Minute two — hand over the receipts</h3>
+<p>Click the Source data tab. "That 4.5% comes from exactly one deal.
+Here's the row. Here's the formula — sum of won Enterprise deals divided
+by the four Enterprise reps' targets. You could recheck it on a napkin."
+Invite them to actually do that, once, with any number they choose. One
+verified napkin beats an hour of assurances.</p>
+
+<h3>Minute three — let them try to break it</h3>
+<p>"Ask it anything. Genuinely — anything." Off-menu questions hit an
+honest refusal. Future questions hit "no data exists." A misheard question
+shows its interpretation in plain sight at the top of the answer — the
+worst case is visible and correctable. The skeptic's instinct is to hunt
+for the lie; give them the hunt, because the architecture means there's no
+invisible place for a lie to live.</p>
+
+<h3>Minute four — show the inspector working</h3>
+<p>Point at the small line under an answer: "AI summary — 11 numbers
+verified against computed results." Then explain the veto: if the AI's
+sentence contained even one number the calculator didn't produce — even
+just "$3.65M" as shorthand — the whole sentence would be discarded, and
+the screen would say so. "The model physically cannot put a number in
+front of you that the arithmetic didn't produce."</p>
+
+<h3>Minute five — the honest close</h3>
+<p>"I won't tell you this tool can't be wrong. My own first version passed
+every test and still missed the shared-revenue problem — I found it by
+attacking my own results, and now that check runs automatically. What I'll
+promise is different: when this tool is wrong, it's wrong <i>visibly</i>,
+<i>traceably</i>, and <i>fixably</i>. And everything it has ever told
+anyone is in a log you can audit." Skeptics don't trust perfection —
+they've been burned by claims of it. They trust accountability.</p>
+
+<div class="say">The pitch to a skeptical CCO is not "trust it." It's:
+here is its own bad news, here are the receipts, try to break it, watch
+the inspector work — and here's the one time it was wrong and how we
+caught it. I'm not asking for trust. I'm handing over the means of
+verification.</div>
+</div>
+
+<!-- ================= CH 16 ================= -->
+<div class="chapter">
+<h2>17 · Question 4 — What does it prove, and what does it not?</h2>
+
+<h3>What it proves</h3>
+<ul>
+<li><b>Trustworthy plain-English answers over sales data are buildable in
+take-home scope.</b> Direct answers, real evidence, honest flags — running
+code, not slides.</li>
+<li><b>Hallucinated numbers can be made structurally impossible</b>, not
+just unlikely: keep the model out of the numeric path, and veto its
+wording against computed results.</li>
+<li><b>Honesty can be a feature, not a caveat.</b> Refusals, red badges,
+and "insufficient data" verdicts are product moments — the demo's
+strongest ones.</li>
+<li><b>The approach finds real problems.</b> Five data findings worth real
+money — including $373,000 counted in two quarters at once — surfaced by
+the tool's own checks, not by luck.</li>
+<li><b>The safety doesn't belong to a vendor.</b> Two different AI
+providers, one-file swap, zero change to any guarantee.</li>
+</ul>
+
+<h3>What it does not prove</h3>
+<ul>
+<li><b>Scale.</b> 180 rows of clean-ish CSV, not millions of live CRM
+records. The design ports; the performance story is unproven.</li>
+<li><b>Open-ended language understanding.</b> Eight question types,
+honestly labeled. It is not "ask anything" — by design.</li>
+<li><b>Live-system messiness.</b> Real Salesforce data fails in more ways
+than two snapshots can show. What carries over is the posture: detect,
+disclose, downgrade.</li>
+<li><b>Prediction.</b> It measures and compares; it does not forecast —
+and it says so rather than inventing probabilities.</li>
+<li><b>That it can't be wrong.</b> It proves something better: that being
+wrong is detectable, attributable, and cheap to fix. The F4 story is the
+evidence — found by human audit after all tests passed, automated ever
+since.</li>
+</ul>
+
+<div class="say">One sentence for each side: it proves a leader can get a
+direct, evidenced, honestly-flagged answer from their own data in seconds
+— and it does not prove scale, open-ended language, or prediction, all of
+which are next steps, not features I'd fake today.</div>
+</div>
+
+<!-- ================= CH 18 (FAQ) ================= -->
+<div class="chapter">
+<h2>18 · Likely questions, short answers</h2>
+
+<p>Each answer here is two to four sentences — the spoken length. Longer
+versions live in the Presenter's Guide, chapter 12.</p>
+
+<h3>"How do I know it isn't making numbers up right now?"</h3>
+<p>Numbers never come from the AI — they come from plain code, tested
+against values I checked by hand. The AI's sentences pass an inspector
+that rejects any number the code didn't produce, and the check is printed
+on screen. Best of all: pick any number you see, and I'll show you its
+rows and its arithmetic, live.</p>
+
+<h3>"Why only eight questions? Why can't I ask anything?"</h3>
+<p>Because "anything" requires the AI to invent the analysis, and an
+invented analysis can be invisibly wrong — which is exactly what happened
+to you before. A short menu of audited analyses makes the worst case a
+visible mix-up instead of an invisible lie. The menu grows every week; the
+rule never changes.</p>
+
+<h3>"Why no RAG or vector database?"</h3>
+<p>RAG is for documents; your data is tables. On tables, fetching should
+be exact — a filter — not a similarity guess. The day you bring contracts
+or call notes, RAG becomes analysis number nine, built and audited like
+the rest.</p>
+
+<h3>"Is Priya Patel really underperforming?"</h3>
+<p>Unknowable from this data, and the tool says exactly that — 61% of her
+pipeline sits on corrupted records. Fix her seven records, re-ask, and
+then it will judge. A tool that refuses to grade people on bad data is
+protecting you, not failing you.</p>
+
+<h3>"Which is the real number — $518,000 or $145,000?"</h3>
+<p>Both are correctly computed from different premises. $518,000 is what
+the current system says Q2 won; $145,000 excludes the three deals your
+closed Q1 books already counted. Choosing between them is a finance-policy
+decision — the tool's job was making sure you know there's a decision to
+make.</p>
+
+<h3>"What happens when we fix the data?"</h3>
+<p>Every problem is re-detected from the files at each start. Fix the
+records and the flags — including the red grades — clear themselves.
+Nothing is hardcoded.</p>
+
+<h3>"What if the AI provider goes down mid-quarter?"</h3>
+<p>Nothing breaks. The app falls back to keyword matching and its own
+plain wording — we watched this happen live during a real provider outage
+and users saw no error. The AI is a convenience, never a dependency.</p>
+
+<h3>"How long to production?"</h3>
+<p>Foundation in two to three weeks: the calculator behind an API,
+read-only connection to your CRM data in a warehouse, sign-on and
+role-based access, and — the upgrade that matters most — daily snapshot
+journaling, which makes the F4 date-moving problem impossible to hide
+rather than merely detectable. Then a three-leader pilot, where the
+success metric is behavioral: are leaders asking questions again?</p>
+
+<h3>"Did you use AI to build this?"</h3>
+<p>Yes, as a pair-programmer — the brief encourages it. The division of
+labor: AI accelerated the code; the design decisions, the metric
+definitions, the audit that caught F4, and the verification standards were
+mine — and every line ended up covered by the 42 tests. Using AI with
+guardrails to build a tool about AI with guardrails felt fitting.</p>
+
+<h3>"What would you do with four more hours?"</h3>
+<p>Three things: a "challenge this number" button that files a review
+ticket with the answer's full context; product-line analyses; and a
+one-click PDF export of any answer — evidence, formula, and flags — for
+meeting handouts.</p>
+</div>
+
+<!-- ================= CH 17 ================= -->
+<div class="chapter">
+<h2>19 · The one-minute closing speech</h2>
+
+<p>Memorize this. It's the whole engagement in ten sentences.</p>
+
+<div class="say">Meridian's problem was never missing data — it was that
+leaders stopped asking questions, because the answers were slow and the
+one AI tool they tried made numbers up. I built a tool where a leader asks
+in plain English and gets three things: a direct answer, the actual rows
+behind it, and a flag whenever the answer leans on an assumption or a data
+problem. The AI in it has exactly two jobs — understand which approved
+question you're asking, and phrase the computed answer — and a validator
+vetoes any number the calculator didn't produce, so the old failure has no
+path to the screen. Along the way the tool's own checks found five real
+problems in the data, including $373,000 of revenue counted in two
+quarters at once — which is why its very first answer grades itself red
+rather than pretending. It refuses what it can't support, logs everything
+it says, degrades gracefully when the AI is down, ships in a container
+that won't even build if a test fails, and comes with documentation the
+client's own team can run without me. It answers eight kinds of questions
+today, not eight thousand — that was the trade, and I'd make it again,
+because every miss is a visible refusal instead of an invisible lie. What
+it proves is that trust in AI answers can be engineered, not promised.
+What it doesn't prove — scale, open language, prediction — is a roadmap,
+not a gap I'd paper over. The last tool lost this client's trust by being
+confidently wrong. This one earns it back by being verifiably right — and
+honestly unsure.</div>
+</div>
+
+<!-- ================= APPENDIX A ================= -->
+<div class="chapter">
+<h2>Appendix A · The numbers you must know</h2>
+
+<table>
+<tr><th>Number</th><th>What it is</th></tr>
+<tr><td class="num">$6,200,000</td><td>Q2 target across the ten reps</td></tr>
+<tr><td class="num">$518,000 · 8.4%</td><td>Won so far in Q2 (day 32 of 91 · 35% elapsed)</td></tr>
+<tr><td class="num">$145,000</td><td>Won counting only truly-new deals (F4 removed)</td></tr>
+<tr><td class="num">$5,198,000 · 46 deals</td><td>Open pipeline (not yet revenue)</td></tr>
+<tr><td class="num">$484,000</td><td>Gap remaining even if every open deal is won</td></tr>
+<tr><td class="num">$165,000 / $3,650,000 · 4.5%</td><td>Enterprise won / target — all of it re-dated; truly new = $0</td></tr>
+<tr><td class="num">$1,260,000 · 21.3%</td><td>Q1 at its own day 32 (Q2 runs at ~41% of that pace)</td></tr>
+<tr><td class="num">$6,041,000 · 102%</td><td>Q1 final result — quarters here finish strong</td></tr>
+<tr><td class="num">77.9% → 1.28×</td><td>Q1 real win rate → pipeline coverage needed to be safe</td></tr>
+<tr><td class="num">Marsh · Park · Cole</td><td>The three at-risk reps (coverage below 1.0×)</td></tr>
+<tr><td class="num">Patel · Torres · Williams</td><td>Unjudgeable — 54–67% of pipeline on corrupted records</td></tr>
+<tr><td class="num">F1: 13 deals · $1.97M</td><td>Reused deal IDs — 38% of all open pipeline</td></tr>
+<tr><td class="num">F4: 3 deals · $373K</td><td>Same revenue counted in both quarters — 72% of "Q2 booked"</td></tr>
+<tr><td class="num">42 · 5 · 22/24</td><td>Tests · reconciliations per load · routing accuracy on the golden set</td></tr>
+</table>
+
+<p class="small">Full breakdowns (every rep, segment, region, finding) are
+in the Presenter's Guide, Appendix B.</p>
+</div>
+
+<!-- ================= APPENDIX B ================= -->
+<div class="chapter">
+<h2>Appendix B · Simple glossary</h2>
+
+<table>
+<tr><th>Word</th><th>Plain meaning</th></tr>
+<tr><td><b>FDE</b></td><td>Forward Deployed Engineer — an engineer who
+builds solutions at the client's side.</td></tr>
+<tr><td><b>Quota</b></td><td>A salesperson's sales target for the quarter,
+in dollars.</td></tr>
+<tr><td><b>Pipeline</b></td><td>Deals being worked on that haven't closed
+yet. Potential money, not real money.</td></tr>
+<tr><td><b>Attainment</b></td><td>Won money divided by target. 4.5% means
+$4.50 won per $100 of target.</td></tr>
+<tr><td><b>Coverage</b></td><td>Open pipeline divided by the remaining
+gap. Below 1.0× means the target is unreachable even winning
+everything.</td></tr>
+<tr><td><b>LLM</b></td><td>Large Language Model — the AI that understands
+and produces text (Claude, Gemini, GPT).</td></tr>
+<tr><td><b>Hallucination</b></td><td>An AI stating something false with
+confidence — here, inventing numbers.</td></tr>
+<tr><td><b>Guardrail</b></td><td>A safety constraint that keeps an AI
+inside its intended job.</td></tr>
+<tr><td><b>Deterministic</b></td><td>Same input, same output, every time —
+ordinary code, no AI. This is what makes checking possible.</td></tr>
+<tr><td><b>RAG</b></td><td>Retrieval-Augmented Generation — fetching
+relevant documents for the AI to read before it answers. For document
+questions, not table questions.</td></tr>
+<tr><td><b>Vector database</b></td><td>A search engine that finds text by
+similarity of meaning (e.g. ChromaDB). The storage behind RAG.</td></tr>
+<tr><td><b>API</b></td><td>A doorway that lets other software talk to your
+software.</td></tr>
+<tr><td><b>Docker / container</b></td><td>A sealed box holding the app and
+everything it needs, so it runs identically anywhere.</td></tr>
+<tr><td><b>Observability</b></td><td>Being able to see what a running
+system is doing — logs, stats, health.</td></tr>
+<tr><td><b>Fail closed</b></td><td>When checks fail, show nothing rather
+than something possibly wrong.</td></tr>
+<tr><td><b>Audit log</b></td><td>A permanent record of every question and
+answer, for accountability.</td></tr>
+<tr><td><b>Snapshot</b></td><td>A photo of the whole data table at one
+moment. We compared two and found five problems.</td></tr>
+<tr><td><b>Reconciliation</b></td><td>Computing the same total two
+different ways and demanding they agree.</td></tr>
+</table>
+
+<hr>
+<p class="small">The Complete Walkthrough · Meridian Pipeline Intelligence
+· Sai Saran · Companions: live app (run.sh / docker compose up) ·
+architecture diagram · guardrails spec · presenter's guide · one-page
+summary.</p>
+</div>
+
+</body>
+</html>
