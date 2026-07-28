@@ -32,7 +32,7 @@ from question_router import (INTENT_LABELS, SUGGESTED_QUESTIONS, UNSUPPORTED,
                              route)
 
 st.set_page_config(page_title="Meridian Pipeline Intelligence",
-                   page_icon="📊", layout="wide",
+                   page_icon="Ⓜ️", layout="wide",
                    initial_sidebar_state="collapsed")
 
 # Neutral light palette with system semantic colors
@@ -619,6 +619,10 @@ if "landing_question" in st.session_state:
 LLM_AVAILABLE = llm_layer.is_llm_available()
 
 with st.sidebar:
+    if st.button("← Engagement brief", type="tertiary", use_container_width=True):
+        st.session_state.entered = False
+        st.rerun()
+
     st.markdown(
         f'<div class="ok-line">Data validated</div>'
         f'<div class="dl">{C.AS_OF:%b %d, %Y} · day {C.ELAPSED_DAYS} of '
@@ -716,10 +720,6 @@ with st.sidebar:
                     f'{h(str(r.get("duration_ms", "—")))}ms</span>'
                     f'<span>{h(r.get("question", "")[:48])}</span></div>',
                     unsafe_allow_html=True)
-
-    if st.button("← Engagement brief", type="tertiary", width="stretch"):
-        st.session_state.entered = False
-        st.rerun()
 
     with st.expander("Methodology"):
         st.markdown(
