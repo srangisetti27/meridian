@@ -32,7 +32,7 @@ from question_router import (INTENT_LABELS, SUGGESTED_QUESTIONS, UNSUPPORTED,
                              route)
 
 st.set_page_config(page_title="Meridian Pipeline Intelligence",
-                   page_icon="◆", layout="wide",
+                   page_icon="📊", layout="wide",
                    initial_sidebar_state="collapsed")
 
 # Neutral light palette with system semantic colors
@@ -663,31 +663,41 @@ with st.sidebar:
     }
 
     _FLAG_DESCRIPTIONS = {
-        "F1": "Deal IDs used across different accounts — check data quality",
-        "F2": "Closed deals that reopened between snapshots — understand churn",
-        "F3": "Open deals past their expected close date — identify overdue deals",
-        "F4": "Revenue reattributed across quarter boundaries — impacts attainment",
-        "F5": "Closed records modified after Q1 close — data integrity concern",
+        "F1": {
+            "short": "Deal IDs used across different accounts",
+            "full": "13 deal IDs are reused for different accounts between Q1 and Q2 snapshots. This represents ~38% of open pipeline value and indicates potential data quality issues. Verify which accounts these deals actually belong to before making decisions based on per-account metrics.",
+        },
+        "F2": {
+            "short": "Closed deals that reopened",
+            "full": "7 deals that closed in Q1 changed outcome in Q2 (either reopened or the outcome changed). This can indicate deal volatility, customer churn, or data entry corrections. Review these deals to understand if they're legitimate reversals or data cleanup.",
+        },
+        "F3": {
+            "short": "Open deals past their expected close date",
+            "full": f"{len(BUNDLE.overdue_ids)} open deals have close dates in the past. These are forecast dates from the reps and may indicate pipeline slippage. These deals should be reviewed to understand why they haven't closed and whether close dates need updating.",
+        },
+        "F4": {
+            "short": "Revenue reattributed across quarter boundaries",
+            "full": "$373,000 of Closed-Won revenue appears in both Q1 and Q2 snapshots with close dates moved across the quarter boundary. This creates ambiguity about which quarter should receive credit. Affected answers show both versions and downgrade their trust badge.",
+        },
+        "F5": {
+            "short": "Closed records modified after Q1 close",
+            "full": "3 closed records were edited after the Q1 book closed. This suggests post-close adjustments or corrections. Understand what changed and why to ensure data integrity for Q1-Q2 comparisons.",
+        },
     }
 
     st.subheader("Data issues")
 
-    # Display flags as clickable items (one per row to avoid layout issues in narrow sidebar)
+    # Display flags as expandable sections
     for flag in BUNDLE.global_flags:
         code = flag.split(" — ")[0]
-        short = _SHORT_FLAGS.get(code, code)
-        description = _FLAG_DESCRIPTIONS.get(code, "View this data issue")
+        count = _SHORT_FLAGS.get(code, code)
+        flag_info = _FLAG_DESCRIPTIONS.get(code, {})
+        short_desc = flag_info.get("short", "Data issue")
+        full_desc = flag_info.get("full", flag)
 
-        if st.button(
-            f"{code}: {short}",
-            key=f"flag_{code}",
-            help=description,
-            use_container_width=True
-        ):
-            # Pre-populate question about this data issue
-            suggested = f"Tell me more about {code}: {description.lower()}"
-            st.session_state.queued_question = suggested
-            st.rerun()
+        with st.expander(f"{code}: {count}"):
+            st.markdown(f"**{short_desc}**")
+            st.markdown(full_desc)
 
     with st.expander("Activity"):
         _obs = observability.summary()
