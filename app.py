@@ -86,6 +86,45 @@ body, p, li, span, label { color: #1D1D1F; }
 /* ---- kill Streamlit's hover element toolbar (the 'st.iframe' tag) ---- */
 [data-testid="stElementToolbar"] { display: none !important; }
 
+/* ---- custom branded spinner / loading state ---- */
+[data-testid="stSpinner"] {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 40px 20px !important;
+}
+[data-testid="stSpinner"] > div {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 16px !important;
+    background: #FFFFFF !important;
+    padding: 32px 48px !important;
+    border-radius: 20px !important;
+    border: 1px solid #E5E5EA !important;
+    box-shadow: 0 8px 32px rgba(124,58,237,.08) !important;
+    animation: rise .3s ease-out !important;
+}
+[data-testid="stSpinner"] > div > span {
+    font-size: .92rem !important;
+    font-weight: 600 !important;
+    color: #7C3AED !important;
+    letter-spacing: -.01em !important;
+}
+/* Override the default Streamlit spinner circle */
+[data-testid="stSpinner"] > div > i,
+[data-testid="stSpinner"] svg circle {
+    stroke: #7C3AED !important;
+}
+
+/* ---- smooth page transition ---- */
+.main .block-container {
+    animation: rise .35s ease-out;
+}
+[data-testid="stChatMessage"] {
+    animation: rise .3s ease-out both;
+}
+
 /* ---- slim workspace top bar ---- */
 .wordmark { font-size: 1.05rem; font-weight: 700; letter-spacing: -.02em;
     color: #1D1D1F; padding-top: 4px; }
@@ -302,7 +341,7 @@ def h(text: str) -> str:
 # ---------------------------------------------------------------------------
 # Data loading (fail-closed)
 # ---------------------------------------------------------------------------
-@st.cache_resource(show_spinner="Validating data…")
+@st.cache_resource(show_spinner="Loading Meridian Pipeline Intelligence...")
 def _load() -> tuple:
     bundle = load_bundle()
     checks = reconcile(bundle)          # raises if totals do not agree
@@ -875,7 +914,7 @@ question = (typed.strip() if typed
             else pending or st.session_state.pop("queued_question", None))
 
 if question:
-    with st.spinner("Thinking…"):
+    with st.spinner("Meridian is analyzing your pipeline data..."):
         _t0 = time.perf_counter()
         turn = process_question(question, llm_on)
         turn["duration_ms"] = int((time.perf_counter() - _t0) * 1000)
