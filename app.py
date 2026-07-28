@@ -672,24 +672,22 @@ with st.sidebar:
 
     st.subheader("Data issues")
 
-    # Display flags as clickable buttons
-    cols = st.columns(len(BUNDLE.global_flags))
-    for idx, flag in enumerate(BUNDLE.global_flags):
+    # Display flags as clickable items (one per row to avoid layout issues in narrow sidebar)
+    for flag in BUNDLE.global_flags:
         code = flag.split(" — ")[0]
         short = _SHORT_FLAGS.get(code, code)
         description = _FLAG_DESCRIPTIONS.get(code, "View this data issue")
 
-        with cols[idx]:
-            if st.button(
-                short,
-                key=f"flag_{code}",
-                help=description,
-                use_container_width=True
-            ):
-                # Pre-populate question about this data issue
-                suggested = f"Tell me more about {code}: {description.lower()}"
-                st.session_state.queued_question = suggested
-                st.rerun()
+        if st.button(
+            f"{code}: {short}",
+            key=f"flag_{code}",
+            help=description,
+            use_container_width=True
+        ):
+            # Pre-populate question about this data issue
+            suggested = f"Tell me more about {code}: {description.lower()}"
+            st.session_state.queued_question = suggested
+            st.rerun()
 
     with st.expander("Activity"):
         _obs = observability.summary()
