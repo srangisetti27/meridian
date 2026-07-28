@@ -661,18 +661,35 @@ with st.sidebar:
         "F4": f"Re-dated revenue · {len(BUNDLE.redated_ids)} deals",
         "F5": f"Edited closed records · {len(BUNDLE.edited_ids)}",
     }
+
+    _FLAG_DESCRIPTIONS = {
+        "F1": "Deal IDs used across different accounts — check data quality",
+        "F2": "Closed deals that reopened between snapshots — understand churn",
+        "F3": "Open deals past their expected close date — identify overdue deals",
+        "F4": "Revenue reattributed across quarter boundaries — impacts attainment",
+        "F5": "Closed records modified after Q1 close — data integrity concern",
+    }
+
     st.subheader("Data issues")
-    rows = []
-    for flag in BUNDLE.global_flags:
+
+    # Display flags as clickable buttons
+    cols = st.columns(len(BUNDLE.global_flags))
+    for idx, flag in enumerate(BUNDLE.global_flags):
         code = flag.split(" — ")[0]
-        rows.append(f'<div class="flag"><span class="flag-code">{h(code)}'
-                    f'</span><span>{h(_SHORT_FLAGS.get(code, code))}'
-                    f'</span></div>')
-    st.markdown("".join(rows), unsafe_allow_html=True)
-    with st.expander("Details"):
-        for flag in BUNDLE.global_flags:
-            st.markdown(f'<div class="assump">{h(flag)}</div>',
-                        unsafe_allow_html=True)
+        short = _SHORT_FLAGS.get(code, code)
+        description = _FLAG_DESCRIPTIONS.get(code, "View this data issue")
+
+        with cols[idx]:
+            if st.button(
+                short,
+                key=f"flag_{code}",
+                help=description,
+                use_container_width=True
+            ):
+                # Pre-populate question about this data issue
+                suggested = f"Tell me more about {code}: {description.lower()}"
+                st.session_state.queued_question = suggested
+                st.rerun()
 
     with st.expander("Activity"):
         _obs = observability.summary()
@@ -857,7 +874,7 @@ if question:
         st.session_state.history.append(turn)
     observability.log_turn(turn)
     if "refusal" in turn:
-        st.toast("Outside the approved analyses — refused, not guessed")
+        st.toast("Not in my dataset — try asking about quota, reps, or segments")
     else:
         narration = turn.get("narration")
         if narration is not None and narration.ok:
@@ -873,12 +890,7 @@ for turn_index, turn in enumerate(st.session_state.history):
     with st.chat_message("assistant"):
         if "refusal" in turn:
             st.markdown(
-                f'<div class="answer-head">'
-                f'<span class="intent-tag">Not supported &nbsp;·&nbsp; '
-                f'{h(turn["matched_on"])}</span></div>'
-                f'<div class="answer-headline">{h(turn["refusal"])}</div>'
-                f'<div class="verify-line">Supported analyses: '
-                f'{h(" · ".join(INTENT_LABELS.values()))}</div>',
+                f'<div class="answer-headline">{h(turn["refusal"])}</div>',
                 unsafe_allow_html=True)
         else:
             render_answer(turn["packet"], turn.get("narration"),

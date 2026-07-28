@@ -107,6 +107,8 @@ ASSUMPTIONS: dict[str, str] = {
 # Router
 # --------------------------------------------------------------------------
 UNSUPPORTED_MESSAGE = (
-    "I cannot answer that reliably from the current dataset. The available "
-    "data supports questions about quota, attainment, deals, representatives, "
-    "segments, regions, stages, and quarter-over-quarter comparisons.")
+    "I don't have the data to answer that question reliably. "
+    "I'm trained on Q1 and Q2 pipeline data, so I can help with quota tracking, "
+    "attainment, deals, rep performance, segments, regions, and Q1-Q2 comparisons. "
+    "Try asking about a specific rep, segment, or region, or how we're tracking "
+    "against quota.")
