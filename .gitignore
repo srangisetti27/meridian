@@ -1,7 +1,35 @@
+# Virtual environments
 .venv/
+venv/
+ENV/
+
+# Python
 __pycache__/
 *.pyc
+*.pyo
+*.egg-info/
 .pytest_cache/
+*.egg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment variables (contains secrets)
+.env
+.env.local
+.env.*.local
+
+# Logs and temp files
 logs/
-.DS_Store
+*.log
 *.bak*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Streamlit
+.streamlit/secrets.toml

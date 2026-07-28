@@ -1,17 +1,42 @@
+version: "3.8"
+
 services:
   meridian:
     build: .
     container_name: meridian-pipeline-intelligence
+
+    # Expose Streamlit on port 8501
     ports:
       - "8501:8501"
+
+    # Load environment from .env file if present
+    env_file:
+      - .env
+
+    # Additional environment variables
     environment:
-      # LLM keys are optional — without them the app runs fully
-      # deterministic (keyword routing, engine-written answers).
+      # LLM keys are optional — without them the app runs fully deterministic
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
       - GEMINI_API_KEY=${GEMINI_API_KEY:-}
       - MERIDIAN_LLM_PROVIDER=${MERIDIAN_LLM_PROVIDER:-}
       - MERIDIAN_LLM_MODEL=${MERIDIAN_LLM_MODEL:-}
+
+      # Streamlit configuration
+      - STREAMLIT_SERVER_HEADLESS=true
+      - STREAMLIT_SERVER_PORT=8501
+      - STREAMLIT_SERVER_ADDRESS=0.0.0.0
+
+    # Persist the query audit log across restarts
     volumes:
-      # Persist the query audit log on the host across container restarts
       - ./logs:/app/logs
+
+    # Restart policy
     restart: unless-stopped
+
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

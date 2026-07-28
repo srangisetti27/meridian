@@ -19,6 +19,10 @@ import streamlit.components.v1 as components
 
 import time
 
+# Load environment variables from .env file if present
+import env_loader
+env_loader.load_env_file()
+
 import config as C
 import llm_layer
 import observability
@@ -634,7 +638,21 @@ with st.sidebar:
         st.caption(llm_layer.provider_label())
     else:
         llm_on = False
-        st.caption("AI assist off — deterministic answers only.")
+        with st.container(border=True):
+            st.warning("⚠️ AI Narration Unavailable", icon="🤖")
+            st.caption(
+                "**Cause:** Missing LLM API key or library.\n\n"
+                "**Why?** The app needs either:\n"
+                "- `ANTHROPIC_API_KEY` environment variable, OR\n"
+                "- `GEMINI_API_KEY` environment variable\n\n"
+                "**Fix:** Set your API key and restart:\n"
+                "```bash\n"
+                "export ANTHROPIC_API_KEY=sk-ant-...\n"
+                "streamlit run app.py\n"
+                "```\n\n"
+                "**Note:** The app runs fully functional in deterministic mode. "
+                "AI narration is optional and only enhances user experience."
+            )
 
     _SHORT_FLAGS = {
         "F1": f"Reused deal IDs · {len(BUNDLE.recycled_ids)} deals",

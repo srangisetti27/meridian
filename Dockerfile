@@ -9,7 +9,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Application code, data, and theme config
 COPY config.py data_loader.py analytics.py question_router.py \
-     llm_layer.py observability.py app.py ./
+     llm_layer.py observability.py env_loader.py app.py ./
 COPY data/ data/
 COPY .streamlit/ .streamlit/
 COPY tests/ tests/

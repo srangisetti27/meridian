@@ -51,17 +51,77 @@ tests/                    37 tests: golden numbers, risk rules, router,
                           narration validator
 ```
 
-## Run it
+## Quick Start
 
+### Option 1: Automated Setup (Recommended)
 ```bash
-python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-python -m pytest tests/ -v                  # verify all golden numbers first
-python scripts/evaluate_router.py           # routing accuracy (rules tier)
+python setup.py
+```
+This validates your Python version, creates the virtual environment, installs dependencies,
+checks data integrity, and reports LLM availability.
 
-streamlit run app.py                        # deterministic mode
-ANTHROPIC_API_KEY=sk-... streamlit run app.py   # + LLM routing & narration
-ANTHROPIC_API_KEY=sk-... python scripts/evaluate_router.py --llm
+### Option 2: Manual Setup
+```bash
+# Create and activate virtual environment
+python3 -m venv .venv
+source .venv/bin/activate          # On Windows: .venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Verify data integrity and golden numbers
+python -m pytest tests/ -v
+
+# Check routing accuracy
+python scripts/evaluate_router.py
+```
+
+### Run the Application
+
+**Deterministic mode (no LLM required):**
+```bash
+streamlit run app.py
+# Open http://localhost:8501
+```
+
+**With AI narration (requires API key):**
+```bash
+export ANTHROPIC_API_KEY=sk-ant-...
+streamlit run app.py
+# The app auto-detects the API key on startup
+```
+
+**Or use the provided run script:**
+```bash
+./run.sh
+# Sets theme preferences automatically
+```
+
+### Docker (Recommended for Production)
+```bash
+# Copy .env.example to .env and add your API keys
+cp .env.example .env
+
+# Launch with Docker Compose
+docker compose up
+
+# Access at http://localhost:8501
+```
+
+### Troubleshooting
+
+**"AI Narration Unavailable" in the sidebar?**
+1. Ensure your API key is set: `echo $ANTHROPIC_API_KEY`
+2. Verify the anthropic package: `pip list | grep anthropic`
+3. The app works fine without it (deterministic mode)
+
+**Data validation tests fail?**
+- Check that CSV files exist in `data/Q1/` and `data/Q2/`
+- Ensure they match the expected schema (see config.py)
+
+**Quick health check:**
+```bash
+python -c "import llm_layer; print('LLM:', llm_layer.provider_label())"
 ```
 
 ## The eight approved analyses
